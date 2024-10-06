@@ -1,6 +1,6 @@
 import express , {Request, Response} from "express";
 import connectMongoDB from "./connection";
-import {logReqResp} from "./middleware/index";
+import {logReqResp} from "./middleware";
 
 /// Importing Routes
 import userRoute from "./routes/user.route";
@@ -15,7 +15,8 @@ connectMongoDB("mongodb://127.0.0.1:27017/testing-users")
 
 /// MiddleWare... 
 app.use(express.json())
-app.use(logReqResp("log.txt"))
+
+app.use(logReqResp("log.txt"));
 // app.use(cors());
 
 
