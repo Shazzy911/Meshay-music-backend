@@ -9,8 +9,8 @@ import {
 
 const router = express.Router();
 
-router.get("/", handleGetUsers).put(handleCreateUser);
-// router.route("/:id").get(handleGetUserById).patch().delete() // Here we're doing grouping because URL is same.
+router.route("/").get(handleGetUsers).post(handleCreateUser);
+
 router
   .route("/:id")
   .get(handleGetUserById)
