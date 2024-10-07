@@ -56,3 +56,57 @@
 2024-10-06T17:30:13.904Z: ::ffff:127.0.0.1 PUT: /user/999
 
 2024-10-06T17:30:23.363Z: ::ffff:127.0.0.1 GET: /user/999
+
+2024-10-07T19:32:58.228Z: ::1 GET: /
+
+2024-10-07T19:33:03.250Z: ::1 GET: /favicon.ico
+
+2024-10-07T19:33:11.858Z: ::1 GET: /user
+
+2024-10-07T19:35:33.856Z: ::1 GET: /user
+
+2024-10-07T19:37:12.823Z: ::ffff:127.0.0.1 POST: /user
+
+2024-10-07T19:53:48.953Z: ::ffff:127.0.0.1 POST: /user
+
+2024-10-07T19:54:42.445Z: ::ffff:127.0.0.1 POST: /user
+
+2024-10-07T19:54:52.014Z: ::ffff:127.0.0.1 GET: /user
+
+2024-10-07T19:59:28.253Z: ::ffff:127.0.0.1 PUT: /user/cm1zfjvey00004bb6qeal8jvl
+
+2024-10-07T20:10:34.217Z: ::ffff:127.0.0.1 PUT: /user/cm1zfjvey00004bb6qeal8jvl
+
+2024-10-07T20:15:46.533Z: ::ffff:127.0.0.1 GET: /user/cm1zfjvey00004bb6qeal8jvl
+
+2024-10-07T20:19:10.176Z: ::ffff:127.0.0.1 PUT: /user/cm1zfjvey00004bb6qeal8jvl
+
+2024-10-07T20:23:00.210Z: ::ffff:127.0.0.1 PUT: /user/cm1zfjvey00004bb6qeal8jvl
+
+2024-10-07T20:23:12.688Z: ::ffff:127.0.0.1 DELETE: /user/cm1zfjvey00004bb6qeal8jvl
+
+2024-10-07T20:23:22.759Z: ::ffff:127.0.0.1 GET: /user
+
+2024-10-07T20:23:45.831Z: ::ffff:127.0.0.1 PUT: /user
+
+2024-10-07T20:24:21.111Z: ::ffff:127.0.0.1 PUT: /user/cm1zfkzz800014bb65bn6l5j2
+
+2024-10-07T20:24:36.655Z: ::ffff:127.0.0.1 GET: /user/cm1zfkzz800014bb65bn6l5j2
+
+2024-10-07T20:24:39.042Z: ::ffff:127.0.0.1 GET: /user/cm1zfkzz800014bb65bn6l5j2
+
+2024-10-07T20:24:40.982Z: ::ffff:127.0.0.1 GET: /user/cm1zfkzz800014bb65bn6l5j2
+
+2024-10-07T20:24:42.200Z: ::ffff:127.0.0.1 GET: /user/cm1zfkzz800014bb65bn6l5j2
+
+2024-10-07T20:24:43.397Z: ::ffff:127.0.0.1 GET: /user/cm1zfkzz800014bb65bn6l5j2
+
+2024-10-07T20:37:39.768Z: ::ffff:127.0.0.1 POST: /user
+
+2024-10-07T20:38:33.954Z: ::ffff:127.0.0.1 POST: /user
+
+2024-10-07T20:38:41.792Z: ::ffff:127.0.0.1 POST: /user
+
+2024-10-07T20:39:35.228Z: ::ffff:127.0.0.1 GET: /user
+
+2024-10-07T20:39:38.824Z: ::ffff:127.0.0.1 GET: /user

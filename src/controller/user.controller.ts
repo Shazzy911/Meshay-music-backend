@@ -1,41 +1,54 @@
 import { Request, Response } from "express";
-import User from "../models/user.model";
+// import User from "../models/user.model";
 import bcrypt from "bcrypt";
-const handleGetUsers = async (req: Request, resp: Response) => {
+import prisma from "../DB/db.config";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 600 });
+
+const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
   try {
-    let data = await User.find();
-    resp.status(200).json({ response: data });
+    // Check cache first
+    const cachedUsers = cache.get("users");
+    if (cachedUsers) {
+      resp.status(200).json({ response: cachedUsers, source: "cache" });
+    }
+
+    let data = await prisma.user.findMany();
+    if (data) {
+      // Store in cache
+      cache.set("users", data);
+      resp.status(200).json({ response: data });
+    } else {
+      resp.status(404).json({ message: "Users not Found" });
+    }
   } catch (error) {
-    resp.status(200).json({ error });
+    resp.status(500).json({ error });
   }
 };
+
 const handleCreateUser = async (req: Request, resp: Response) => {
   try {
     // let data = new User(req.body);
     // let result = await data.save();
     const body = req.body;
-    if (
-      !body ||
-      !body.userId ||
-      !body.username ||
-      !body.email ||
-      !body.password
-    ) {
+    if (!body || !body.username || !body.email || !body.password) {
       resp.status(404).json({ message: "All fields are required" });
     }
     // Saving Encrypted Password;
     const hashedPassword = await bcrypt.hash(body.password, 10);
 
-    const result = await User.create({
-      userId: body.userId,
-      username: body.username,
-      email: body.email,
-      password: hashedPassword,
+    const data = await prisma.user.create({
+      data: {
+        username: body.username,
+        email: body.email,
+        password: hashedPassword,
+      },
     });
 
     resp
       .status(201)
-      .json({ result: result, message: "User Information Saved Successfully" });
+      .json({ result: data, message: "User Information Saved Successfully" });
   } catch (error) {
     resp.status(500).json({ error, message: "Error Saving Information" });
   }
@@ -44,10 +57,13 @@ const handleCreateUser = async (req: Request, resp: Response) => {
 /// User By Id.
 const handleGetUserById = async (req: Request, resp: Response) => {
   try {
-    const userId = parseInt(req.params.id);
-    
+    const userId = req.params.id;
 
-    let data = await User.findOne({ userId: userId });
+    let data = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
     if (!data) {
       resp.status(404).json({ message: "User not found" });
       return;
@@ -57,33 +73,57 @@ const handleGetUserById = async (req: Request, resp: Response) => {
         .json({ data: data, message: "User Infomation Successfully Found" });
     }
   } catch (error) {
-    resp.status(500).json({ error, message: "User Information Error" });
+    resp
+      .status(500)
+      .json({ error, message: "User Info Not Updated Successfully" });
   }
 };
+
 const handleUpdateUserById = async (req: Request, resp: Response) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     const body = req.body;
     // const hashedPassword = ;
-    let updateUser = { ...req.body, password: await bcrypt.hash(body.password, 10) };
-    let data = await User.updateOne({ userId }, updateUser);
+    let updatedData = {
+      ...body,
+    };
+
+    // Check if password exists and is not empty
+    if (body.password) {
+      updatedData.password = await bcrypt.hash(body.password, 10);
+    } else {
+      // Optionally remove password if it is not being updated
+      delete updatedData.password;
+    }
+
+    // let data = await User.updateOne({ userId }, updateUser);
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: updatedData,
+    });
     resp
       .status(200)
-      .json({ data: data, message: "User Info Updated Successfully" });
+      .json({ data: user, message: "User Info Updated Successfully" });
   } catch (error) {
-    resp.status(500).json({ error, message: "User Info Updated Successfully" });
+    console.error(error); // Log the full error object
+    resp
+      .status(500)
+      .json({ error, message: "User Info Not Updated Successfully" });
   }
 };
+
 const handleDeleteUserById = async (req: Request, resp: Response) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
 
-    let data = await User.deleteOne({ userId: userId });
-    if (data.deletedCount === 0) {
+    const user = await prisma.user.delete({
+      where: { id: userId },
+    });
+    if (user) {
       // If no user was deleted, return a 404 Not Found response
-      resp.status(404).json({ message: "User not found" });
+      resp.status(200).json({ user, message: "User deleted successfully" });
     } else {
-      resp.status(200).json({ data, message: "User deleted successfully" });
+      resp.status(404).json({ message: "User not found" });
     }
   } catch (error) {
     resp.status(500).json({ error, message: "User Not Found" });
