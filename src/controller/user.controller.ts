@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import prisma from "../DB/db.config";
 import NodeCache from "node-cache";
 
-const cache = new NodeCache({ stdTTL: 600 });
+const cache = new NodeCache({ stdTTL: 60 });
 
 const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
   try {
@@ -12,15 +12,15 @@ const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
     const cachedUsers = cache.get("users");
     if (cachedUsers) {
       resp.status(200).json({ response: cachedUsers, source: "cache" });
-    }
-
-    let data = await prisma.user.findMany();
-    if (data) {
-      // Store in cache
-      cache.set("users", data);
-      resp.status(200).json({ response: data });
     } else {
-      resp.status(404).json({ message: "Users not Found" });
+      let data = await prisma.user.findMany();
+      if (data && data.length > 0) {
+        // Store in cache
+        cache.set("users", data);
+        resp.status(200).json({ response: data });
+      } else {
+        resp.status(404).json({ message: "Users not Found" });
+      }
     }
   } catch (error) {
     resp.status(500).json({ error });
@@ -29,8 +29,6 @@ const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
 
 const handleCreateUser = async (req: Request, resp: Response) => {
   try {
-    // let data = new User(req.body);
-    // let result = await data.save();
     const body = req.body;
     if (!body || !body.username || !body.email || !body.password) {
       resp.status(404).json({ message: "All fields are required" });
