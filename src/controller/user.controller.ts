@@ -1,21 +1,136 @@
 import { Request, Response } from "express";
-import User from "../models/user.model";
+// import User from "../models/user.model";
+import bcrypt from "bcrypt";
+import prisma from "../DB/db.config";
+import NodeCache from "node-cache";
 
-const handleGetUsers = async (req: Request, resp: Response) => {
-  let data = await User.find();
-  console.log(data);
-  resp.send(data);
-};
-const handleGetUserById = async (req: Request, resp: Response) => {
-  const userId = parseInt(req.params.id);
+const cache = new NodeCache({ stdTTL: 60 });
 
-  const user = await User.findOne( {userId});
-
-  if (user) {
-    resp.send(JSON.stringify(user));
-  } else {
-    resp.status(404).json({ message: "User not found" });
+const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
+  try {
+    // Check cache first
+    const cachedUsers = cache.get("users");
+    if (cachedUsers) {
+      resp.status(200).json({ response: cachedUsers, source: "cache" });
+    } else {
+      let data = await prisma.user.findMany();
+      if (data && data.length > 0) {
+        // Store in cache
+        cache.set("users", data);
+        resp.status(200).json({ response: data });
+      } else {
+        resp.status(404).json({ message: "Users not Found" });
+      }
+    }
+  } catch (error) {
+    resp.status(500).json({ error });
   }
 };
 
-export { handleGetUserById, handleGetUsers};
+const handleCreateUser = async (req: Request, resp: Response) => {
+  try {
+    const body = req.body;
+    if (!body || !body.username || !body.email || !body.password) {
+      resp.status(404).json({ message: "All fields are required" });
+    }
+    // Saving Encrypted Password;
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
+    const data = await prisma.user.create({
+      data: {
+        username: body.username,
+        email: body.email,
+        password: hashedPassword,
+      },
+    });
+
+    resp
+      .status(201)
+      .json({ result: data, message: "User Information Saved Successfully" });
+  } catch (error) {
+    resp.status(500).json({ error, message: "Error Saving Information" });
+  }
+};
+
+/// User By Id.
+const handleGetUserById = async (req: Request, resp: Response) => {
+  try {
+    const userId = req.params.id;
+
+    let data = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!data) {
+      resp.status(404).json({ message: "User not found" });
+      return;
+    } else {
+      resp
+        .status(200)
+        .json({ data: data, message: "User Infomation Successfully Found" });
+    }
+  } catch (error) {
+    resp
+      .status(500)
+      .json({ error, message: "User Info Not Updated Successfully" });
+  }
+};
+
+const handleUpdateUserById = async (req: Request, resp: Response) => {
+  try {
+    const userId = req.params.id;
+    const body = req.body;
+    // const hashedPassword = ;
+    let updatedData = {
+      ...body,
+    };
+
+    // Check if password exists and is not empty
+    if (body.password) {
+      updatedData.password = await bcrypt.hash(body.password, 10);
+    } else {
+      // Optionally remove password if it is not being updated
+      delete updatedData.password;
+    }
+
+    // let data = await User.updateOne({ userId }, updateUser);
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: updatedData,
+    });
+    resp
+      .status(200)
+      .json({ data: user, message: "User Info Updated Successfully" });
+  } catch (error) {
+    console.error(error); // Log the full error object
+    resp
+      .status(500)
+      .json({ error, message: "User Info Not Updated Successfully" });
+  }
+};
+
+const handleDeleteUserById = async (req: Request, resp: Response) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await prisma.user.delete({
+      where: { id: userId },
+    });
+    if (user) {
+      // If no user was deleted, return a 404 Not Found response
+      resp.status(200).json({ user, message: "User deleted successfully" });
+    } else {
+      resp.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    resp.status(500).json({ error, message: "User Not Found" });
+  }
+};
+export {
+  handleGetUsers,
+  handleCreateUser,
+  handleGetUserById,
+  handleUpdateUserById,
+  handleDeleteUserById,
+};
