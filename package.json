@@ -2,10 +2,9 @@
   "name": "music-app-backend",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
+    "start": "nodemon ./src/index.ts",
     "build": "tsc",
     "dev": "nodemon"
   },
