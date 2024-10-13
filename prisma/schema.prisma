@@ -20,4 +20,91 @@ model User {
   password  String?
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+
+  // Define the one-to-many relationship
+  playlist Playlist[] // This defines that one artist can have many albums
+}
+
+model Artist {
+  id     String  @id @default(cuid())
+  // Artist details 
+  name   String
+  genre  String
+  bio    String
+  img    String
+  // Define the one-to-many relationship
+  albums Album[] // This defines that one artist can have many albums
+  songs  Song[] // This defines that one artist can have many songs
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Album {
+  id          String   @id @default(cuid())
+  artist_id   String
+  // Album details 
+  title       String
+  genre       String
+  img         String
+  releaseData DateTime
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  // Define the one-to-many relationship
+  songs     Song[] // This defines that one artist can have many songs
+  /// defining relationship
+  artist    Artist   @relation(fields: [artist_id], references: [id])
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  artist_id   String
+  album_id    String
+  // song details 
+  title       String
+  duration    Int
+  img         String
+  genre       String
+  songUrl     String
+  releaseData DateTime
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  /// defining relationship
+  artist    Artist         @relation(fields: [artist_id], references: [id])
+  album     Album          @relation(fields: [album_id], references: [id])
+  // Relationship to playlists through the join table
+  playlists PlaylistSong[]
+}
+
+model Playlist {
+  id          String @id @default(cuid())
+  user_id     String
+  // playlist details 
+  title       String
+  description String
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  /// defining relationship
+
+  user  User           @relation(fields: [user_id], references: [id])
+  // Relationship to songs through the join table
+  songs PlaylistSong[]
+}
+
+model PlaylistSong {
+  id         String @id @default(cuid())
+  playlistId String
+  songId     String
+
+  // Relationships
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  // Ensure each song can only be added to a playlist once
+  @@unique([playlistId, songId])
 }

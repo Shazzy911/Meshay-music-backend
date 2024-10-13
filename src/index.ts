@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-
+import cors from "cors";
 import { logReqResp } from "./middleware";
 
 /// Importing Routes
@@ -10,9 +10,8 @@ const port = 3000;
 
 /// MiddleWare...
 app.use(express.json());
-
 app.use(logReqResp("log.txt"));
-// app.use(cors());
+app.use(cors());
 
 app.use("/user", userRoute);
 

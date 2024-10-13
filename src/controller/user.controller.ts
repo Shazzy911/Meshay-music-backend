@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 // import User from "../models/user.model";
 import bcrypt from "bcrypt";
-import prisma from "../DB/db.config";
+import prisma from "../lib/prisma.config";
 import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 60 });
