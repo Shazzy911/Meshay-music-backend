@@ -22,7 +22,10 @@ model User {
   createdAt DateTime @default(now())
 
   // Define the one-to-many relationship
-  playlist Playlist[] // This defines that one artist can have many albums
+  playlist     Playlist[] // This defines that one artist can have many albums
+  rating       Rating[] // This defines that one artist can have many rating
+  payment      Payment[] // This defines that one artist can have many payment
+  subscription Subscription[]
 }
 
 model Artist {
@@ -42,7 +45,7 @@ model Artist {
 
 model Album {
   id          String   @id @default(cuid())
-  artist_id   String
+  artistId    String
   // Album details 
   title       String
   genre       String
@@ -54,13 +57,13 @@ model Album {
   // Define the one-to-many relationship
   songs     Song[] // This defines that one artist can have many songs
   /// defining relationship
-  artist    Artist   @relation(fields: [artist_id], references: [id])
+  artist    Artist   @relation(fields: [artistId], references: [id])
 }
 
 model Song {
   id          String   @id @default(cuid())
-  artist_id   String
-  album_id    String
+  artistId    String
+  albumId     String
   // song details 
   title       String
   duration    Int
@@ -73,15 +76,16 @@ model Song {
   createdAt DateTime @default(now())
 
   /// defining relationship
-  artist    Artist         @relation(fields: [artist_id], references: [id])
-  album     Album          @relation(fields: [album_id], references: [id])
+  artist    Artist         @relation(fields: [artistId], references: [id])
+  album     Album          @relation(fields: [albumId], references: [id])
   // Relationship to playlists through the join table
   playlists PlaylistSong[]
+  rating    Rating[]
 }
 
 model Playlist {
   id          String @id @default(cuid())
-  user_id     String
+  userId      String
   // playlist details 
   title       String
   description String
@@ -91,7 +95,7 @@ model Playlist {
 
   /// defining relationship
 
-  user  User           @relation(fields: [user_id], references: [id])
+  user  User           @relation(fields: [userId], references: [id])
   // Relationship to songs through the join table
   songs PlaylistSong[]
 }
@@ -107,4 +111,45 @@ model PlaylistSong {
 
   // Ensure each song can only be added to a playlist once
   @@unique([playlistId, songId])
+}
+
+model Rating {
+  id     String @id @default(cuid())
+  rating Int
+  userId String
+  songId String
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id])
+
+  song Song @relation(fields: [songId], references: [id])
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String // Foreign key to the User model
+  plan      String // e.g., "Basic", "Premium", etc.
+  startDate DateTime // When the subscription starts
+  endDate   DateTime // When the subscription ends
+  status    String // e.g., "Active", "Cancelled", "Expired"
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id])
+
+  payment Payment[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  userId         String
+  subscriptionId String?
+  amount         Int
+  date           DateTime
+  method         String
+
+  user         User          @relation(fields: [userId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id]) // Optional relation
 }
