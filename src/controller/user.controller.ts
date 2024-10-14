@@ -6,7 +6,7 @@ import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 60 });
 
-const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
+const getAllUsers = async (req: Request, resp: Response): Promise<void> => {
   try {
     // Check cache first
     const cachedUsers = cache.get("users");
@@ -27,19 +27,19 @@ const handleGetUsers = async (req: Request, resp: Response): Promise<void> => {
   }
 };
 
-const handleCreateUser = async (req: Request, resp: Response) => {
+const createUser = async (req: Request, resp: Response) => {
   try {
-    const body = req.body;
-    if (!body || !body.username || !body.email || !body.password) {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
       resp.status(404).json({ message: "All fields are required" });
     }
     // Saving Encrypted Password;
-    const hashedPassword = await bcrypt.hash(body.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const data = await prisma.user.create({
       data: {
-        username: body.username,
-        email: body.email,
+        username,
+        email,
         password: hashedPassword,
       },
     });
@@ -53,7 +53,7 @@ const handleCreateUser = async (req: Request, resp: Response) => {
 };
 
 /// User By Id.
-const handleGetUserById = async (req: Request, resp: Response) => {
+const getUserById = async (req: Request, resp: Response) => {
   try {
     const userId = req.params.id;
 
@@ -77,7 +77,7 @@ const handleGetUserById = async (req: Request, resp: Response) => {
   }
 };
 
-const handleUpdateUserById = async (req: Request, resp: Response) => {
+const updateUserById = async (req: Request, resp: Response) => {
   try {
     const userId = req.params.id;
     const body = req.body;
@@ -110,7 +110,7 @@ const handleUpdateUserById = async (req: Request, resp: Response) => {
   }
 };
 
-const handleDeleteUserById = async (req: Request, resp: Response) => {
+const deleteUserById = async (req: Request, resp: Response) => {
   try {
     const userId = req.params.id;
 
@@ -127,10 +127,4 @@ const handleDeleteUserById = async (req: Request, resp: Response) => {
     resp.status(500).json({ error, message: "User Not Found" });
   }
 };
-export {
-  handleGetUsers,
-  handleCreateUser,
-  handleGetUserById,
-  handleUpdateUserById,
-  handleDeleteUserById,
-};
+export { getAllUsers, createUser, getUserById, updateUserById, deleteUserById };
