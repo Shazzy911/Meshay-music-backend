@@ -36,7 +36,7 @@ const createUser = async (req: Request, resp: Response) => {
     // Saving Encrypted Password;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const data = await prisma.user.create({
+    const data = await prisma.user.createMany({
       data: {
         username,
         email,
