@@ -5,7 +5,17 @@ import prisma from "../lib/prisma.config";
 
 const getAllArtist = async (req: Request, resp: Response) => {
   try {
-    let artist = await prisma.artist.findMany();
+    let artist = await prisma.artist.findMany({
+      include: {
+        songs: true,
+        albums: {
+          select: {
+            title: true,
+            genre: true,
+          },
+        },
+      },
+    });
 
     if (!artist || artist.length === 0) {
       resp.status(404).json({ message: "Artist not Found" });

@@ -20,14 +20,14 @@ const getAllSong = async (req: Request, resp: Response) => {
 const createSong = async (req: Request, resp: Response) => {
   try {
     const {
+      artistId,
+      albumId,
       title,
       duration,
       img,
       genre,
       songUrl,
-      releaseData,
-      artistId,
-      albumId,
+      releaseDate,
     } = req.body;
 
     if (
@@ -36,7 +36,7 @@ const createSong = async (req: Request, resp: Response) => {
       !img ||
       !genre ||
       !songUrl ||
-      !releaseData ||
+      !releaseDate ||
       !artistId ||
       !albumId
     ) {
@@ -82,7 +82,7 @@ const createSong = async (req: Request, resp: Response) => {
         img,
         genre,
         songUrl,
-        releaseData,
+        releaseDate,
       },
     });
 
@@ -175,3 +175,14 @@ const deleteSongById = async (req: Request, resp: Response) => {
   }
 };
 export { getAllSong, createSong, getSongById, updateSongById, deleteSongById };
+
+// {
+//   "artistId": "cm29dgzp1001y3uneq03diuj1",
+//   "albumId": "cm29dhzb000203unelhxwrjus",
+//   "title": "Telus Jesus Freak",
+//   "duration": 205,
+//   "img": "http://example.com",
+//   "genre": "Pop",
+//   "songUrl": "http://song.com",
+//   "releaseDate": "2021-03-20T00:00:00Z"
+// }

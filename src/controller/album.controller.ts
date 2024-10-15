@@ -19,18 +19,10 @@ const getAllAlbum = async (req: Request, resp: Response) => {
 
 const createAlbum = async (req: Request, resp: Response) => {
   try {
-    const { title, duration, img, genre, AlbumUrl, releaseData, artistId } =
+    const { title, duration, img, genre, AlbumUrl, releaseDate, artistId } =
       req.body;
 
-    if (
-      !title ||
-      !duration ||
-      !img ||
-      !genre ||
-      !AlbumUrl ||
-      !releaseData ||
-      !artistId
-    ) {
+    if (!artistId || !title || !genre || !img || !releaseDate) {
       resp.status(404).json({ message: "All fields are required" });
     }
 
@@ -68,9 +60,9 @@ const createAlbum = async (req: Request, resp: Response) => {
       data: {
         artistId,
         title,
-        img,
         genre,
-        releaseData,
+        img,
+        releaseDate,
       },
     });
 
