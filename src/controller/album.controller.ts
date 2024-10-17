@@ -25,7 +25,7 @@ const createAlbum = async (req: Request, resp: Response) => {
     if (!artistId || !title || !genre || !img || !releaseDate) {
       resp.status(404).json({ message: "All fields are required" });
     }
-
+    const isoReleaseDate = new Date(releaseDate).toISOString();
     // Upload the image to a specific folder in your Supabase storage bucket
     // const { data: storageData, error: storageError } = await supabase.storage
     //   .from("music-store")
@@ -62,7 +62,7 @@ const createAlbum = async (req: Request, resp: Response) => {
         title,
         genre,
         img,
-        releaseDate,
+        releaseDate: isoReleaseDate,
       },
     });
 

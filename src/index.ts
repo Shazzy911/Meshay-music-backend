@@ -17,9 +17,10 @@ const app = express();
 const port = 4500;
 
 /// MiddleWare...
-app.use(express.json());
-app.use(logReqResp("log.txt"));
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(logReqResp("log.txt"));
 
 app.use("/user", userRoute);
 app.use("/artist", artistRoute);
