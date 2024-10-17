@@ -36,6 +36,7 @@ const createArtist = async (req: Request, resp: Response) => {
       resp.status(404).json({ message: "All fields are required" });
     }
     const file = req.file as IFile;
+    console.log(file);
     if (!file) {
       resp.status(400).json({ message: "File is missing... not uploaded" });
     }
@@ -44,8 +45,9 @@ const createArtist = async (req: Request, resp: Response) => {
     // upload the file to supabase
     const { data: storageData, error: storageError } = await supabase.storage
       .from("music-store")
-      .upload(file.originalname, fileBase64, {
+      .upload("images/" + file.originalname, fileBase64, {
         contentType: file.mimetype,
+        cacheControl: "3600",
         upsert: false,
       });
 
@@ -62,7 +64,7 @@ const createArtist = async (req: Request, resp: Response) => {
     // Check if storageData is not null
     if (storageData !== null) {
       const imageData = supabase.storage
-        .from("music-store/images")
+        .from("music-store")
         .getPublicUrl(storageData.path);
 
       const artistData = await prisma.artist.create({

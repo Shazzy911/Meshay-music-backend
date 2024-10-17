@@ -14,7 +14,7 @@ import subscriptionRoute from "./routes/subscription.route";
 import paymentRoute from "./routes/payment.route";
 
 const app = express();
-const port = 4500;
+const port = 7500;
 
 /// MiddleWare...
 app.use(cors());
