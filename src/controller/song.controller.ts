@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import prisma from "../lib/prisma.config";
-import { supabase } from "../lib/supabaseClient";
+import supabase from "../lib/supabaseClient";
 
 const getAllSong = async (req: Request, resp: Response) => {
   try {
@@ -42,6 +42,9 @@ const createSong = async (req: Request, resp: Response) => {
     ) {
       resp.status(404).json({ message: "All fields are required" });
     }
+    console.log(typeof duration);
+    // Convert releaseDate to ISO string format (with milliseconds and Z for UTC)
+    const isoReleaseDate = new Date(releaseDate).toISOString();
 
     // Upload the image to a specific folder in your Supabase storage bucket
     // const { data: storageData, error: storageError } = await supabase.storage
@@ -82,7 +85,7 @@ const createSong = async (req: Request, resp: Response) => {
         img,
         genre,
         songUrl,
-        releaseDate,
+        releaseDate: isoReleaseDate,
       },
     });
 

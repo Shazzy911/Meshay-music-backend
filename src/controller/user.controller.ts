@@ -2,25 +2,16 @@ import { Request, Response } from "express";
 // import User from "../models/user.model";
 import bcrypt from "bcrypt";
 import prisma from "../lib/prisma.config";
-import NodeCache from "node-cache";
-
-const cache = new NodeCache({ stdTTL: 60 });
 
 const getAllUsers = async (req: Request, resp: Response): Promise<void> => {
   try {
     // Check cache first
-    const cachedUsers = cache.get("users");
-    if (cachedUsers) {
-      resp.status(200).json({ response: cachedUsers, source: "cache" });
+
+    let data = await prisma.user.findMany();
+    if (data && data.length > 0) {
+      resp.status(200).json({ response: data });
     } else {
-      let data = await prisma.user.findMany();
-      if (data && data.length > 0) {
-        // Store in cache
-        cache.set("users", data);
-        resp.status(200).json({ response: data });
-      } else {
-        resp.status(404).json({ message: "Users not Found" });
-      }
+      resp.status(404).json({ message: "Users not Found" });
     }
   } catch (error) {
     resp.status(500).json({ error });
