@@ -28,6 +28,24 @@ model User {
   subscription Subscription[]
 }
 
+// model UserDetails {
+//   id        String   @id @default(cuid())
+//   userId    String   @unique  // Foreign key to User model
+//   profileImg String?   @map("profile_img")// URL of the profile image
+//   bio       String?  // Short bio of the user
+//   phone     String?  // User's phone number
+//   birthdate DateTime?   @map("birth_date") // Optional birthdate of the user
+//   address   String?  // Optional address
+
+//   updatedAt DateTime @updatedAt
+//   createdAt DateTime @default(now())
+
+//   // Relationship with the User model
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@map("user_details")
+// }
+
 model Artist {
   id     String  @id @default(cuid())
   // Artist details 

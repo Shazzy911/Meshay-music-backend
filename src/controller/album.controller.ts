@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 
 import prisma from "../lib/prisma.config";
+import { IFile } from "../types/file.type";
+import supabase from "../lib/supabaseClient";
+import { decode } from "base64-arraybuffer";
+
 // import { supabase } from "../lib/supabaseClient";
 
 const getAllAlbum = async (req: Request, resp: Response) => {
@@ -19,56 +23,65 @@ const getAllAlbum = async (req: Request, resp: Response) => {
 
 const createAlbum = async (req: Request, resp: Response) => {
   try {
-    const { title, duration, img, genre, AlbumUrl, releaseDate, artistId } =
-      req.body;
+    const { title, genre, releaseDate, artistId } = req.body;
+    console.warn(title, genre, releaseDate, artistId);
 
-    if (!artistId || !title || !genre || !img || !releaseDate) {
+    if (!artistId || !title || !genre || !releaseDate) {
       resp.status(404).json({ message: "All fields are required" });
     }
     const isoReleaseDate = new Date(releaseDate).toISOString();
-    // Upload the image to a specific folder in your Supabase storage bucket
-    // const { data: storageData, error: storageError } = await supabase.storage
-    //   .from("music-store")
-    //   .upload(`Album/${file.originalname}`, file.buffer, {
-    //     cacheControl: "3600",
-    //     upsert: false,
-    //     contentType: file.mimetype,
-    //   });
 
-    // if (storageError) {
-    //   return resp
-    //     .status(500)
-    //     .json({
-    //       error: storageError,
-    //       message: "Error uploading image to Supabase",
-    //     });
-    // }
+    const file = req.file as IFile;
+    console.log(file);
+    if (!file) {
+      resp.status(400).json({ message: "File is missing... not uploaded" });
+    }
+    // decode file buffer to base64
+    const fileBase64 = decode(file.buffer.toString("base64"));
+    // upload the file to supabase
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from("music-store")
+      .upload("images/album/" + file.originalname, fileBase64, {
+        contentType: file.mimetype,
+        cacheControl: "3600",
+        upsert: false,
+      });
 
-    // Get the public URL for the image
-    // const { data: urlData, error: urlError } = supabase.storage
-    //   .from("music-store")
-    //   .getPublicUrl(`images/${file.originalname}`);
+    // Handle storage upload errors
+    if (storageError) {
+      resp.status(500).json({
+        message: "Error uploading image to Supabase",
+        error: storageError.message,
+      });
+    }
 
-    // if (urlError || !urlData) {
-    //   return resp.status(500).json({
-    //     error: urlError,
-    //     message: "Error generating public URL for the image",
-    //   });
-    // }
+    // get public url of the uploaded file
 
-    const data = await prisma.album.create({
-      data: {
-        artistId,
-        title,
-        genre,
-        img,
-        releaseDate: isoReleaseDate,
-      },
-    });
+    // Check if storageData is not null
+    if (storageData !== null) {
+      const imageData = supabase.storage
+        .from("music-store")
+        .getPublicUrl(storageData.path);
 
-    resp
-      .status(201)
-      .json({ result: data, message: "Album Information Saved Successfully" });
+      const data = await prisma.album.create({
+        data: {
+          artistId,
+          title,
+          genre,
+          img: imageData?.data?.publicUrl || "", // Use the public URL for the image,
+          releaseDate: isoReleaseDate,
+        },
+      });
+      resp.status(201).json({
+        result: data,
+        message: "Album Information Saved Successfully",
+      });
+    } else {
+      // Handle the case where storageData is null
+      resp.status(500).json({
+        message: "Error uploading file, storage data is null",
+      });
+    }
   } catch (error) {
     resp.status(500).json({ error, message: "Error Saving Information" });
   }

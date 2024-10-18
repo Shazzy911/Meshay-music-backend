@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
-
+import { decode } from "base64-arraybuffer";
 import prisma from "../lib/prisma.config";
+import { IFile } from "../types/file.type";
 import supabase from "../lib/supabaseClient";
+
+type IMulterFiles = {
+  [fieldname: string]: IFile[];
+};
 
 const getAllSong = async (req: Request, resp: Response) => {
   try {
@@ -19,23 +24,12 @@ const getAllSong = async (req: Request, resp: Response) => {
 
 const createSong = async (req: Request, resp: Response) => {
   try {
-    const {
-      artistId,
-      albumId,
-      title,
-      duration,
-      img,
-      genre,
-      songUrl,
-      releaseDate,
-    } = req.body;
+    const { artistId, albumId, title, duration, genre, releaseDate } = req.body;
 
     if (
       !title ||
       !duration ||
-      !img ||
       !genre ||
-      !songUrl ||
       !releaseDate ||
       !artistId ||
       !albumId
@@ -43,57 +37,91 @@ const createSong = async (req: Request, resp: Response) => {
       resp.status(404).json({ message: "All fields are required" });
     }
     console.log(typeof duration);
+
+    let Numduration = Number(req.body.duration);
+    console.log(typeof Numduration);
+    console.log(artistId, albumId, title, duration, genre, releaseDate);
+    const file = req.files as { [fieldname: string]: IFile[] };
+    const imageFile = file["img"][0];
+    const songFile = file["songUrl"][0];
+    // If we reach here, we have both files safely
+    console.log("Image File:", imageFile.originalname);
+    console.log("Song File:", songFile.originalname);
+
+    // decode file buffer to base64
+    const imgFileBase64 = decode(imageFile.buffer.toString("base64"));
+    const songFileBase64 = decode(songFile.buffer.toString("base64"));
+
     // Convert releaseDate to ISO string format (with milliseconds and Z for UTC)
     const isoReleaseDate = new Date(releaseDate).toISOString();
 
-    // Upload the image to a specific folder in your Supabase storage bucket
-    // const { data: storageData, error: storageError } = await supabase.storage
-    //   .from("music-store")
-    //   .upload(`Song/${file.originalname}`, file.buffer, {
-    //     cacheControl: "3600",
-    //     upsert: false,
-    //     contentType: file.mimetype,
-    //   });
+    // upload the imageFile to supabase
+    const { data: imageUpload, error: imageError } = await supabase.storage
+      .from("music-store")
+      .upload("images/song/" + imageFile.originalname, imgFileBase64, {
+        contentType: imageFile.mimetype,
+        cacheControl: "3600",
+        upsert: false,
+      });
 
-    // if (storageError) {
-    //   return resp
-    //     .status(500)
-    //     .json({
-    //       error: storageError,
-    //       message: "Error uploading image to Supabase",
-    //     });
-    // }
+    // Handle storage upload errors
+    if (imageError) {
+      resp.status(500).json({
+        message: "Error uploading image to Supabase",
+        error: imageError.message,
+      });
+    }
+    // upload the imageFile to supabase
+    const { data: songUpload, error: songError } = await supabase.storage
+      .from("music-store")
+      .upload("audio/" + songFile.originalname, songFileBase64, {
+        contentType: songFile.mimetype,
+        cacheControl: "3600",
+        upsert: false,
+      });
 
-    // Get the public URL for the image
-    // const { data: urlData, error: urlError } = supabase.storage
-    //   .from("music-store")
-    //   .getPublicUrl(`images/${file.originalname}`);
+    // Handle storage upload errors
+    if (songError) {
+      resp.status(500).json({
+        message: "Error uploading Song to Supabase",
+        error: songError.message,
+      });
+    }
 
-    // if (urlError || !urlData) {
-    //   return resp.status(500).json({
-    //     error: urlError,
-    //     message: "Error generating public URL for the image",
-    //   });
-    // }
+    // Check if imageUpload is not null
+    if (songUpload !== null && imageUpload !== null) {
+      const imageUrl = supabase.storage
+        .from("music-store")
+        .getPublicUrl(imageUpload.path);
+      const songUrl = supabase.storage
+        .from("music-store")
+        .getPublicUrl(songUpload.path);
 
-    const data = await prisma.song.create({
-      data: {
-        artistId,
-        albumId,
-        title,
-        duration,
-        img,
-        genre,
-        songUrl,
-        releaseDate: isoReleaseDate,
-      },
-    });
+      const songData = await prisma.song.create({
+        data: {
+          artistId,
+          albumId,
+          title,
+          duration: Numduration,
+          genre,
+          releaseDate: isoReleaseDate,
+          img: imageUrl?.data?.publicUrl || "",
+          songUrl: songUrl?.data?.publicUrl || "",
+        },
+      });
 
-    resp
-      .status(201)
-      .json({ result: data, message: "Song Information Saved Successfully" });
+      resp.status(201).json({
+        result: songData,
+        message: "Song Information Saved Successfully",
+      });
+    } else {
+      // Handle the case where storageData is null
+      resp.status(500).json({
+        message: "Error uploading file, Song data is null",
+      });
+    }
   } catch (error) {
-    resp.status(500).json({ error, message: "Error Saving Information" });
+    resp.status(500).json({ error, message: "Error Saving Song Information" });
   }
 };
 

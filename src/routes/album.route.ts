@@ -1,6 +1,5 @@
 import express from "express";
-const multer = require("multer");
-const upload = multer({ dest: "./uploads/" });
+import { upload } from "../lib/multer-config";
 import {
   getAllAlbum,
   createAlbum,
@@ -11,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.route("/").get(getAllAlbum).post(upload.single("image"), createAlbum);
+router.route("/").get(getAllAlbum).post(upload.single("img"), createAlbum);
 
 router
   .route("/:id")

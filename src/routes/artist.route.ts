@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.route("/").get(getAllArtist).post(upload.single("file"), createArtist);
+router.route("/").get(getAllArtist).post(upload.single("img"), createArtist);
 
 router
   .route("/:id")
