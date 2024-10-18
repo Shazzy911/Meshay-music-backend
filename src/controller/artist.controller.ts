@@ -44,8 +44,9 @@ const createArtist = async (req: Request, resp: Response) => {
     // upload the file to supabase
     const { data: storageData, error: storageError } = await supabase.storage
       .from("music-store")
-      .upload(file.originalname, fileBase64, {
+      .upload("images/artist/" + file.originalname, fileBase64, {
         contentType: file.mimetype,
+        cacheControl: "3600",
         upsert: false,
       });
 
@@ -62,7 +63,7 @@ const createArtist = async (req: Request, resp: Response) => {
     // Check if storageData is not null
     if (storageData !== null) {
       const imageData = supabase.storage
-        .from("music-store/images")
+        .from("music-store")
         .getPublicUrl(storageData.path);
 
       const artistData = await prisma.artist.create({

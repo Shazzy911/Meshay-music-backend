@@ -1,6 +1,6 @@
 import express from "express";
-const multer = require("multer");
-const upload = multer({ dest: "./uploads/" });
+import { upload } from "../lib/multer-config";
+
 import {
   getAllSong,
   createSong,
@@ -11,7 +11,16 @@ import {
 
 const router = express.Router();
 
-router.route("/").get(getAllSong).post(upload.single("image"), createSong);
+router
+  .route("/")
+  .get(getAllSong)
+  .post(
+    upload.fields([
+      { name: "img", maxCount: 1 },
+      { name: "songUrl", maxCount: 1 },
+    ]),
+    createSong
+  );
 
 router
   .route("/:id")
