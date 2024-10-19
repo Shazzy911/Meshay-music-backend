@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -17,9 +8,9 @@ const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 const supabaseClient_1 = __importDefault(require("../lib/supabaseClient"));
 const base64_arraybuffer_1 = require("base64-arraybuffer");
 // import { supabase } from "../lib/supabaseClient";
-const getAllAlbum = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllAlbum = async (req, resp) => {
     try {
-        let Album = yield prisma_config_1.default.album.findMany();
+        let Album = await prisma_config_1.default.album.findMany();
         if (!Album || Album.length === 0) {
             resp.status(404).json({ message: "Album not Found" });
         }
@@ -28,10 +19,9 @@ const getAllAlbum = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllAlbum = getAllAlbum;
-const createAlbum = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const createAlbum = async (req, resp) => {
     try {
         const { title, genre, releaseDate, artistId } = req.body;
         console.warn(title, genre, releaseDate, artistId);
@@ -47,7 +37,7 @@ const createAlbum = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
         // decode file buffer to base64
         const fileBase64 = (0, base64_arraybuffer_1.decode)(file.buffer.toString("base64"));
         // upload the file to supabase
-        const { data: storageData, error: storageError } = yield supabaseClient_1.default.storage
+        const { data: storageData, error: storageError } = await supabaseClient_1.default.storage
             .from("music-store")
             .upload("images/album/" + file.originalname, fileBase64, {
             contentType: file.mimetype,
@@ -67,12 +57,12 @@ const createAlbum = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
             const imageData = supabaseClient_1.default.storage
                 .from("music-store")
                 .getPublicUrl(storageData.path);
-            const data = yield prisma_config_1.default.album.create({
+            const data = await prisma_config_1.default.album.create({
                 data: {
                     artistId,
                     title,
                     genre,
-                    img: ((_a = imageData === null || imageData === void 0 ? void 0 : imageData.data) === null || _a === void 0 ? void 0 : _a.publicUrl) || "",
+                    img: imageData?.data?.publicUrl || "", // Use the public URL for the image,
                     releaseDate: isoReleaseDate,
                 },
             });
@@ -92,13 +82,13 @@ const createAlbum = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createAlbum = createAlbum;
 /// Album By Id.
-const getAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAlbumById = async (req, resp) => {
     try {
         const AlbumId = req.params.id;
-        let data = yield prisma_config_1.default.album.findUnique({
+        let data = await prisma_config_1.default.album.findUnique({
             where: {
                 id: AlbumId,
             },
@@ -117,13 +107,13 @@ const getAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
             .status(500)
             .json({ error, message: "Album Info Not Updated Successfully" });
     }
-});
+};
 exports.getAlbumById = getAlbumById;
-const updateAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updateAlbumById = async (req, resp) => {
     try {
         const AlbumId = req.params.id;
         const body = req.body;
-        const existingAlbum = yield prisma_config_1.default.album.findUnique({
+        const existingAlbum = await prisma_config_1.default.album.findUnique({
             where: {
                 id: AlbumId,
             },
@@ -131,9 +121,11 @@ const updateAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, functio
         if (!existingAlbum) {
             resp.status(404).json({ message: "Album Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Album.updateOne({ AlbumId }, updateAlbum);
-        const Album = yield prisma_config_1.default.album.update({
+        const Album = await prisma_config_1.default.album.update({
             where: { id: AlbumId },
             data: updatedData,
         });
@@ -146,12 +138,12 @@ const updateAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, functio
             .status(500)
             .json({ error, message: "Album Info Not Updated Successfully" });
     }
-});
+};
 exports.updateAlbumById = updateAlbumById;
-const deleteAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteAlbumById = async (req, resp) => {
     try {
         const AlbumId = req.params.id;
-        const existingAlbum = yield prisma_config_1.default.album.findUnique({
+        const existingAlbum = await prisma_config_1.default.album.findUnique({
             where: {
                 id: AlbumId,
             },
@@ -159,7 +151,7 @@ const deleteAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, functio
         if (!existingAlbum) {
             resp.status(404).json({ message: "Album Not Found" });
         }
-        const Album = yield prisma_config_1.default.album.delete({
+        const Album = await prisma_config_1.default.album.delete({
             where: { id: AlbumId },
         });
         resp.status(200).json({ Album, message: "Album deleted successfully" });
@@ -167,5 +159,5 @@ const deleteAlbumById = (req, resp) => __awaiter(void 0, void 0, void 0, functio
     catch (error) {
         resp.status(500).json({ error, message: "Album Not Found" });
     }
-});
+};
 exports.deleteAlbumById = deleteAlbumById;

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePlaylistById = exports.updatePlaylistById = exports.getPlaylistById = exports.createPlaylist = exports.getAllPlaylist = void 0;
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 // import { supabase } from "../lib/supabaseClient";
-const getAllPlaylist = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllPlaylist = async (req, resp) => {
     try {
-        let Playlist = yield prisma_config_1.default.playlist.findMany();
+        let Playlist = await prisma_config_1.default.playlist.findMany();
         if (!Playlist || Playlist.length === 0) {
             resp.status(404).json({ message: "Playlist not Found" });
         }
@@ -26,9 +17,9 @@ const getAllPlaylist = (req, resp) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllPlaylist = getAllPlaylist;
-const createPlaylist = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const createPlaylist = async (req, resp) => {
     try {
         const { title, userId, description } = req.body;
         if (!title || !description || !userId) {
@@ -60,7 +51,7 @@ const createPlaylist = (req, resp) => __awaiter(void 0, void 0, void 0, function
         //     message: "Error generating public URL for the image",
         //   });
         // }
-        const data = yield prisma_config_1.default.playlist.create({
+        const data = await prisma_config_1.default.playlist.create({
             data: {
                 userId,
                 title,
@@ -75,13 +66,13 @@ const createPlaylist = (req, resp) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createPlaylist = createPlaylist;
 /// Playlist By Id.
-const getPlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getPlaylistById = async (req, resp) => {
     try {
         const PlaylistId = req.params.id;
-        let data = yield prisma_config_1.default.playlist.findUnique({
+        let data = await prisma_config_1.default.playlist.findUnique({
             where: {
                 id: PlaylistId,
             },
@@ -101,13 +92,13 @@ const getPlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, functio
             .status(500)
             .json({ error, message: "Playlist Info Not Updated Successfully" });
     }
-});
+};
 exports.getPlaylistById = getPlaylistById;
-const updatePlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updatePlaylistById = async (req, resp) => {
     try {
         const PlaylistId = req.params.id;
         const body = req.body;
-        const existingPlaylist = yield prisma_config_1.default.playlist.findUnique({
+        const existingPlaylist = await prisma_config_1.default.playlist.findUnique({
             where: {
                 id: PlaylistId,
             },
@@ -115,9 +106,11 @@ const updatePlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, func
         if (!existingPlaylist) {
             resp.status(404).json({ message: "Playlist Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Playlist.updateOne({ PlaylistId }, updatePlaylist);
-        const Playlist = yield prisma_config_1.default.playlist.update({
+        const Playlist = await prisma_config_1.default.playlist.update({
             where: { id: PlaylistId },
             data: updatedData,
         });
@@ -130,12 +123,12 @@ const updatePlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, func
             .status(500)
             .json({ error, message: "Playlist Info Not Updated Successfully" });
     }
-});
+};
 exports.updatePlaylistById = updatePlaylistById;
-const deletePlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deletePlaylistById = async (req, resp) => {
     try {
         const PlaylistId = req.params.id;
-        const existingPlaylist = yield prisma_config_1.default.playlist.findUnique({
+        const existingPlaylist = await prisma_config_1.default.playlist.findUnique({
             where: {
                 id: PlaylistId,
             },
@@ -143,7 +136,7 @@ const deletePlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, func
         if (!existingPlaylist) {
             resp.status(404).json({ message: "Playlist Not Found" });
         }
-        const Playlist = yield prisma_config_1.default.playlist.delete({
+        const Playlist = await prisma_config_1.default.playlist.delete({
             where: { id: PlaylistId },
         });
         resp
@@ -153,5 +146,5 @@ const deletePlaylistById = (req, resp) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         resp.status(500).json({ error, message: "Playlist Not Found" });
     }
-});
+};
 exports.deletePlaylistById = deletePlaylistById;

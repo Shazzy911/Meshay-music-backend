@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteSubscriptionById = exports.updateSubscriptionById = exports.getSubscriptionById = exports.createSubscription = exports.getAllSubscription = void 0;
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 // import { supabase } from "../lib/supabaseClient";
-const getAllSubscription = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllSubscription = async (req, resp) => {
     try {
-        let Subscription = yield prisma_config_1.default.subscription.findMany();
+        let Subscription = await prisma_config_1.default.subscription.findMany();
         if (!Subscription || Subscription.length === 0) {
             resp.status(404).json({ message: "Subscription not Found" });
         }
@@ -26,9 +17,9 @@ const getAllSubscription = (req, resp) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllSubscription = getAllSubscription;
-const createSubscription = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const createSubscription = async (req, resp) => {
     try {
         const { userId, status, plan, startDate, endDate } = req.body;
         if (!status || !plan || !userId || !startDate || !endDate) {
@@ -60,7 +51,7 @@ const createSubscription = (req, resp) => __awaiter(void 0, void 0, void 0, func
         //     message: "Error generating public URL for the image",
         //   });
         // }
-        const data = yield prisma_config_1.default.subscription.create({
+        const data = await prisma_config_1.default.subscription.create({
             data: {
                 userId,
                 status,
@@ -77,13 +68,13 @@ const createSubscription = (req, resp) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createSubscription = createSubscription;
 /// Subscription By Id.
-const getSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getSubscriptionById = async (req, resp) => {
     try {
         const SubscriptionId = req.params.id;
-        let data = yield prisma_config_1.default.subscription.findUnique({
+        let data = await prisma_config_1.default.subscription.findUnique({
             where: {
                 id: SubscriptionId,
             },
@@ -103,13 +94,13 @@ const getSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, fun
             .status(500)
             .json({ error, message: "Subscription Info Not Updated Successfully" });
     }
-});
+};
 exports.getSubscriptionById = getSubscriptionById;
-const updateSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updateSubscriptionById = async (req, resp) => {
     try {
         const SubscriptionId = req.params.id;
         const body = req.body;
-        const existingSubscription = yield prisma_config_1.default.subscription.findUnique({
+        const existingSubscription = await prisma_config_1.default.subscription.findUnique({
             where: {
                 id: SubscriptionId,
             },
@@ -117,9 +108,11 @@ const updateSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, 
         if (!existingSubscription) {
             resp.status(404).json({ message: "Subscription Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Subscription.updateOne({ SubscriptionId }, updateSubscription);
-        const Subscription = yield prisma_config_1.default.subscription.update({
+        const Subscription = await prisma_config_1.default.subscription.update({
             where: { id: SubscriptionId },
             data: updatedData,
         });
@@ -133,12 +126,12 @@ const updateSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, 
             .status(500)
             .json({ error, message: "Subscription Info Not Updated Successfully" });
     }
-});
+};
 exports.updateSubscriptionById = updateSubscriptionById;
-const deleteSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteSubscriptionById = async (req, resp) => {
     try {
         const SubscriptionId = req.params.id;
-        const existingSubscription = yield prisma_config_1.default.subscription.findUnique({
+        const existingSubscription = await prisma_config_1.default.subscription.findUnique({
             where: {
                 id: SubscriptionId,
             },
@@ -146,7 +139,7 @@ const deleteSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, 
         if (!existingSubscription) {
             resp.status(404).json({ message: "Subscription Not Found" });
         }
-        const Subscription = yield prisma_config_1.default.subscription.delete({
+        const Subscription = await prisma_config_1.default.subscription.delete({
             where: { id: SubscriptionId },
         });
         resp
@@ -156,5 +149,5 @@ const deleteSubscriptionById = (req, resp) => __awaiter(void 0, void 0, void 0, 
     catch (error) {
         resp.status(500).json({ error, message: "Subscription Not Found" });
     }
-});
+};
 exports.deleteSubscriptionById = deleteSubscriptionById;

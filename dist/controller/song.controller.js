@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -16,9 +7,9 @@ exports.deleteSongById = exports.updateSongById = exports.getSongById = exports.
 const base64_arraybuffer_1 = require("base64-arraybuffer");
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 const supabaseClient_1 = __importDefault(require("../lib/supabaseClient"));
-const getAllSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllSong = async (req, resp) => {
     try {
-        let Song = yield prisma_config_1.default.song.findMany();
+        let Song = await prisma_config_1.default.song.findMany();
         if (!Song || Song.length === 0) {
             resp.status(404).json({ message: "Song not Found" });
         }
@@ -27,10 +18,9 @@ const getAllSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllSong = getAllSong;
-const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+const createSong = async (req, resp) => {
     try {
         const { artistId, albumId, title, duration, genre, releaseDate } = req.body;
         if (!title ||
@@ -57,7 +47,7 @@ const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
         // Convert releaseDate to ISO string format (with milliseconds and Z for UTC)
         const isoReleaseDate = new Date(releaseDate).toISOString();
         // upload the imageFile to supabase
-        const { data: imageUpload, error: imageError } = yield supabaseClient_1.default.storage
+        const { data: imageUpload, error: imageError } = await supabaseClient_1.default.storage
             .from("music-store")
             .upload("images/song/" + imageFile.originalname, imgFileBase64, {
             contentType: imageFile.mimetype,
@@ -65,7 +55,7 @@ const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
             upsert: false,
         });
         // upload the imageFile to supabase
-        const { data: songUpload, error: songError } = yield supabaseClient_1.default.storage
+        const { data: songUpload, error: songError } = await supabaseClient_1.default.storage
             .from("music-store")
             .upload("audio/" + songFile.originalname, songFileBase64, {
             contentType: songFile.mimetype,
@@ -77,7 +67,7 @@ const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
             const errorMessage = imageError ? "image" : "song";
             resp.status(404).json({
                 message: `Error uploading ${errorMessage} to Supabase`,
-                error: (imageError === null || imageError === void 0 ? void 0 : imageError.message) || (songError === null || songError === void 0 ? void 0 : songError.message),
+                error: imageError?.message || songError?.message,
             });
         }
         // Check if imageUpload is not null
@@ -88,7 +78,7 @@ const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
             const songUrl = supabaseClient_1.default.storage
                 .from("music-store")
                 .getPublicUrl(songUpload.path);
-            const songData = yield prisma_config_1.default.song.create({
+            const songData = await prisma_config_1.default.song.create({
                 data: {
                     artistId,
                     albumId,
@@ -96,8 +86,8 @@ const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
                     duration: Numduration,
                     genre,
                     releaseDate: isoReleaseDate,
-                    img: ((_a = imageUrl === null || imageUrl === void 0 ? void 0 : imageUrl.data) === null || _a === void 0 ? void 0 : _a.publicUrl) || "",
-                    songUrl: ((_b = songUrl === null || songUrl === void 0 ? void 0 : songUrl.data) === null || _b === void 0 ? void 0 : _b.publicUrl) || "",
+                    img: imageUrl?.data?.publicUrl || "",
+                    songUrl: songUrl?.data?.publicUrl || "",
                 },
             });
             resp.status(201).json({
@@ -116,13 +106,13 @@ const createSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* ()
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Song Information" });
     }
-});
+};
 exports.createSong = createSong;
 /// Song By Id.
-const getSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getSongById = async (req, resp) => {
     try {
         const SongId = req.params.id;
-        let data = yield prisma_config_1.default.song.findUnique({
+        let data = await prisma_config_1.default.song.findUnique({
             where: {
                 id: SongId,
             },
@@ -141,13 +131,13 @@ const getSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* (
             .status(500)
             .json({ error, message: "Song Info Not Updated Successfully" });
     }
-});
+};
 exports.getSongById = getSongById;
-const updateSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updateSongById = async (req, resp) => {
     try {
         const SongId = req.params.id;
         const body = req.body;
-        const existingSong = yield prisma_config_1.default.song.findUnique({
+        const existingSong = await prisma_config_1.default.song.findUnique({
             where: {
                 id: SongId,
             },
@@ -155,9 +145,11 @@ const updateSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function
         if (!existingSong) {
             resp.status(404).json({ message: "Song Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Song.updateOne({ SongId }, updateSong);
-        const Song = yield prisma_config_1.default.song.update({
+        const Song = await prisma_config_1.default.song.update({
             where: { id: SongId },
             data: updatedData,
         });
@@ -170,12 +162,12 @@ const updateSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function
             .status(500)
             .json({ error, message: "Song Info Not Updated Successfully" });
     }
-});
+};
 exports.updateSongById = updateSongById;
-const deleteSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteSongById = async (req, resp) => {
     try {
         const SongId = req.params.id;
-        const existingSong = yield prisma_config_1.default.song.findUnique({
+        const existingSong = await prisma_config_1.default.song.findUnique({
             where: {
                 id: SongId,
             },
@@ -183,7 +175,7 @@ const deleteSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function
         if (!existingSong) {
             resp.status(404).json({ message: "Song Not Found" });
         }
-        const Song = yield prisma_config_1.default.song.delete({
+        const Song = await prisma_config_1.default.song.delete({
             where: { id: SongId },
         });
         resp.status(200).json({ Song, message: "Song deleted successfully" });
@@ -191,7 +183,7 @@ const deleteSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function
     catch (error) {
         resp.status(500).json({ error, message: "Song Not Found" });
     }
-});
+};
 exports.deleteSongById = deleteSongById;
 // {
 //   "artistId": "cm29dgzp1001y3uneq03diuj1",

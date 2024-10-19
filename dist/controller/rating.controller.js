@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteRatingById = exports.updateRatingById = exports.getRatingById = exports.createRating = exports.getAllRating = void 0;
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 // import { supabase } from "../lib/supabaseClient";
-const getAllRating = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllRating = async (req, resp) => {
     try {
-        let Rating = yield prisma_config_1.default.rating.findMany();
+        let Rating = await prisma_config_1.default.rating.findMany();
         if (!Rating || Rating.length === 0) {
             resp.status(404).json({ message: "Rating not Found" });
         }
@@ -26,9 +17,9 @@ const getAllRating = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllRating = getAllRating;
-const createRating = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const createRating = async (req, resp) => {
     try {
         const { rating, userId, songId } = req.body;
         if (!rating || !songId || !userId) {
@@ -60,7 +51,7 @@ const createRating = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
         //     message: "Error generating public URL for the image",
         //   });
         // }
-        const data = yield prisma_config_1.default.rating.create({
+        const data = await prisma_config_1.default.rating.create({
             data: {
                 userId,
                 songId,
@@ -74,13 +65,13 @@ const createRating = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createRating = createRating;
 /// Rating By Id.
-const getRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getRatingById = async (req, resp) => {
     try {
         const RatingId = req.params.id;
-        let data = yield prisma_config_1.default.rating.findUnique({
+        let data = await prisma_config_1.default.rating.findUnique({
             where: {
                 id: RatingId,
             },
@@ -99,13 +90,13 @@ const getRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, function*
             .status(500)
             .json({ error, message: "Rating Info Not Updated Successfully" });
     }
-});
+};
 exports.getRatingById = getRatingById;
-const updateRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updateRatingById = async (req, resp) => {
     try {
         const RatingId = req.params.id;
         const body = req.body;
-        const existingRating = yield prisma_config_1.default.rating.findUnique({
+        const existingRating = await prisma_config_1.default.rating.findUnique({
             where: {
                 id: RatingId,
             },
@@ -113,9 +104,11 @@ const updateRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
         if (!existingRating) {
             resp.status(404).json({ message: "Rating Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Rating.updateOne({ RatingId }, updateRating);
-        const Rating = yield prisma_config_1.default.rating.update({
+        const Rating = await prisma_config_1.default.rating.update({
             where: { id: RatingId },
             data: updatedData,
         });
@@ -128,12 +121,12 @@ const updateRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
             .status(500)
             .json({ error, message: "Rating Info Not Updated Successfully" });
     }
-});
+};
 exports.updateRatingById = updateRatingById;
-const deleteRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteRatingById = async (req, resp) => {
     try {
         const RatingId = req.params.id;
-        const existingRating = yield prisma_config_1.default.rating.findUnique({
+        const existingRating = await prisma_config_1.default.rating.findUnique({
             where: {
                 id: RatingId,
             },
@@ -141,7 +134,7 @@ const deleteRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
         if (!existingRating) {
             resp.status(404).json({ message: "Rating Not Found" });
         }
-        const Rating = yield prisma_config_1.default.rating.delete({
+        const Rating = await prisma_config_1.default.rating.delete({
             where: { id: RatingId },
         });
         resp.status(200).json({ Rating, message: "Rating deleted successfully" });
@@ -149,5 +142,5 @@ const deleteRatingById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
     catch (error) {
         resp.status(500).json({ error, message: "Rating Not Found" });
     }
-});
+};
 exports.deleteRatingById = deleteRatingById;

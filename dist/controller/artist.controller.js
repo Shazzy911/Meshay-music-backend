@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -16,9 +7,9 @@ exports.deleteArtistById = exports.updateArtistById = exports.getArtistById = ex
 const base64_arraybuffer_1 = require("base64-arraybuffer");
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 const supabaseClient_1 = __importDefault(require("../lib/supabaseClient"));
-const getAllArtist = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllArtist = async (req, resp) => {
     try {
-        let artist = yield prisma_config_1.default.artist.findMany({
+        let artist = await prisma_config_1.default.artist.findMany({
             include: {
                 songs: true,
                 albums: {
@@ -37,10 +28,9 @@ const getAllArtist = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllArtist = getAllArtist;
-const createArtist = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const createArtist = async (req, resp) => {
     // {file: File},
     try {
         const { name, genre, bio } = req.body;
@@ -54,7 +44,7 @@ const createArtist = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
         // decode file buffer to base64
         const fileBase64 = (0, base64_arraybuffer_1.decode)(file.buffer.toString("base64"));
         // upload the file to supabase
-        const { data: storageData, error: storageError } = yield supabaseClient_1.default.storage
+        const { data: storageData, error: storageError } = await supabaseClient_1.default.storage
             .from("music-store")
             .upload("images/artist/" + file.originalname, fileBase64, {
             contentType: file.mimetype,
@@ -74,12 +64,12 @@ const createArtist = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
             const imageData = supabaseClient_1.default.storage
                 .from("music-store")
                 .getPublicUrl(storageData.path);
-            const artistData = yield prisma_config_1.default.artist.create({
+            const artistData = await prisma_config_1.default.artist.create({
                 data: {
                     name,
                     genre,
                     bio,
-                    img: ((_a = imageData === null || imageData === void 0 ? void 0 : imageData.data) === null || _a === void 0 ? void 0 : _a.publicUrl) || "", // Use the public URL for the image,
+                    img: imageData?.data?.publicUrl || "", // Use the public URL for the image,
                 },
             });
             resp.status(201).json({
@@ -98,13 +88,13 @@ const createArtist = (req, resp) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createArtist = createArtist;
 /// Artist By Id.
-const getArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getArtistById = async (req, resp) => {
     try {
         const ArtistId = req.params.id;
-        let data = yield prisma_config_1.default.artist.findUnique({
+        let data = await prisma_config_1.default.artist.findUnique({
             where: {
                 id: ArtistId,
             },
@@ -123,13 +113,13 @@ const getArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, function*
             .status(500)
             .json({ error, message: "Artist Info Not Updated Successfully" });
     }
-});
+};
 exports.getArtistById = getArtistById;
-const updateArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updateArtistById = async (req, resp) => {
     try {
         const ArtistId = req.params.id;
         const body = req.body;
-        const existingArtist = yield prisma_config_1.default.artist.findUnique({
+        const existingArtist = await prisma_config_1.default.artist.findUnique({
             where: {
                 id: ArtistId,
             },
@@ -137,9 +127,11 @@ const updateArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
         if (!existingArtist) {
             resp.status(404).json({ message: "Artist Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Artist.updateOne({ ArtistId }, updateArtist);
-        const Artist = yield prisma_config_1.default.artist.update({
+        const Artist = await prisma_config_1.default.artist.update({
             where: { id: ArtistId },
             data: updatedData,
         });
@@ -152,12 +144,12 @@ const updateArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
             .status(500)
             .json({ error, message: "Artist Info Not Updated Successfully" });
     }
-});
+};
 exports.updateArtistById = updateArtistById;
-const deleteArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteArtistById = async (req, resp) => {
     try {
         const ArtistId = req.params.id;
-        const existingArtist = yield prisma_config_1.default.artist.findUnique({
+        const existingArtist = await prisma_config_1.default.artist.findUnique({
             where: {
                 id: ArtistId,
             },
@@ -165,7 +157,7 @@ const deleteArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
         if (!existingArtist) {
             resp.status(404).json({ message: "Artist Not Found" });
         }
-        const Artist = yield prisma_config_1.default.artist.delete({
+        const Artist = await prisma_config_1.default.artist.delete({
             where: { id: ArtistId },
         });
         resp.status(200).json({ Artist, message: "Artist deleted successfully" });
@@ -173,5 +165,5 @@ const deleteArtistById = (req, resp) => __awaiter(void 0, void 0, void 0, functi
     catch (error) {
         resp.status(500).json({ error, message: "Artist Not Found" });
     }
-});
+};
 exports.deleteArtistById = deleteArtistById;
