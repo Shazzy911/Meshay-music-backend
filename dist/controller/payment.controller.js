@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePaymentById = exports.updatePaymentById = exports.getPaymentById = exports.createPayment = exports.getAllPayment = void 0;
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 // import { supabase } from "../lib/supabaseClient";
-const getAllPayment = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllPayment = async (req, resp) => {
     try {
-        let Payment = yield prisma_config_1.default.payment.findMany();
+        let Payment = await prisma_config_1.default.payment.findMany();
         if (!Payment || Payment.length === 0) {
             resp.status(404).json({ message: "Payment not Found" });
         }
@@ -26,9 +17,9 @@ const getAllPayment = (req, resp) => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllPayment = getAllPayment;
-const createPayment = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const createPayment = async (req, resp) => {
     try {
         const { userId, subscriptionId, amount, date, method } = req.body;
         if (!userId || !subscriptionId || !amount || !date || !method) {
@@ -60,7 +51,7 @@ const createPayment = (req, resp) => __awaiter(void 0, void 0, void 0, function*
         //     message: "Error generating public URL for the image",
         //   });
         // }
-        const data = yield prisma_config_1.default.payment.create({
+        const data = await prisma_config_1.default.payment.create({
             data: {
                 userId,
                 subscriptionId,
@@ -77,13 +68,13 @@ const createPayment = (req, resp) => __awaiter(void 0, void 0, void 0, function*
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createPayment = createPayment;
 /// Payment By Id.
-const getPaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getPaymentById = async (req, resp) => {
     try {
         const PaymentId = req.params.id;
-        let data = yield prisma_config_1.default.payment.findUnique({
+        let data = await prisma_config_1.default.payment.findUnique({
             where: {
                 id: PaymentId,
             },
@@ -102,13 +93,13 @@ const getPaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, function
             .status(500)
             .json({ error, message: "Payment Info Not Updated Successfully" });
     }
-});
+};
 exports.getPaymentById = getPaymentById;
-const updatePaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updatePaymentById = async (req, resp) => {
     try {
         const PaymentId = req.params.id;
         const body = req.body;
-        const existingPayment = yield prisma_config_1.default.payment.findUnique({
+        const existingPayment = await prisma_config_1.default.payment.findUnique({
             where: {
                 id: PaymentId,
             },
@@ -116,9 +107,11 @@ const updatePaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, funct
         if (!existingPayment) {
             resp.status(404).json({ message: "Payment Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await Payment.updateOne({ PaymentId }, updatePayment);
-        const Payment = yield prisma_config_1.default.payment.update({
+        const Payment = await prisma_config_1.default.payment.update({
             where: { id: PaymentId },
             data: updatedData,
         });
@@ -131,12 +124,12 @@ const updatePaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, funct
             .status(500)
             .json({ error, message: "Payment Info Not Updated Successfully" });
     }
-});
+};
 exports.updatePaymentById = updatePaymentById;
-const deletePaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deletePaymentById = async (req, resp) => {
     try {
         const PaymentId = req.params.id;
-        const existingPayment = yield prisma_config_1.default.payment.findUnique({
+        const existingPayment = await prisma_config_1.default.payment.findUnique({
             where: {
                 id: PaymentId,
             },
@@ -144,7 +137,7 @@ const deletePaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, funct
         if (!existingPayment) {
             resp.status(404).json({ message: "Payment Not Found" });
         }
-        const Payment = yield prisma_config_1.default.payment.delete({
+        const Payment = await prisma_config_1.default.payment.delete({
             where: { id: PaymentId },
         });
         resp.status(200).json({ Payment, message: "Payment deleted successfully" });
@@ -152,5 +145,5 @@ const deletePaymentById = (req, resp) => __awaiter(void 0, void 0, void 0, funct
     catch (error) {
         resp.status(500).json({ error, message: "Payment Not Found" });
     }
-});
+};
 exports.deletePaymentById = deletePaymentById;

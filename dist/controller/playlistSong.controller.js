@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePlaylistSongById = exports.updatePlaylistSongById = exports.getPlaylistSongById = exports.createPlaylistSong = exports.getAllPlaylistSong = void 0;
 const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
 // import { supabase } from "../lib/supabaseClient";
-const getAllPlaylistSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllPlaylistSong = async (req, resp) => {
     try {
-        let PlaylistSong = yield prisma_config_1.default.playlistSong.findMany();
+        let PlaylistSong = await prisma_config_1.default.playlistSong.findMany();
         if (!PlaylistSong || PlaylistSong.length === 0) {
             resp.status(404).json({ message: "PlaylistSong not Found" });
         }
@@ -26,9 +17,9 @@ const getAllPlaylistSong = (req, resp) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         resp.status(500).json({ error });
     }
-});
+};
 exports.getAllPlaylistSong = getAllPlaylistSong;
-const createPlaylistSong = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const createPlaylistSong = async (req, resp) => {
     try {
         const { playlistId, songId } = req.body;
         if (!playlistId || !songId) {
@@ -60,7 +51,7 @@ const createPlaylistSong = (req, resp) => __awaiter(void 0, void 0, void 0, func
         //     message: "Error generating public URL for the image",
         //   });
         // }
-        const data = yield prisma_config_1.default.playlistSong.create({
+        const data = await prisma_config_1.default.playlistSong.create({
             data: {
                 playlistId,
                 songId,
@@ -74,13 +65,13 @@ const createPlaylistSong = (req, resp) => __awaiter(void 0, void 0, void 0, func
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
     }
-});
+};
 exports.createPlaylistSong = createPlaylistSong;
 /// PlaylistSong By Id.
-const getPlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const getPlaylistSongById = async (req, resp) => {
     try {
         const PlaylistSongId = req.params.id;
-        let data = yield prisma_config_1.default.playlistSong.findUnique({
+        let data = await prisma_config_1.default.playlistSong.findUnique({
             where: {
                 id: PlaylistSongId,
             },
@@ -100,13 +91,13 @@ const getPlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, fun
             .status(500)
             .json({ error, message: "PlaylistSong Info Not Updated Successfully" });
     }
-});
+};
 exports.getPlaylistSongById = getPlaylistSongById;
-const updatePlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const updatePlaylistSongById = async (req, resp) => {
     try {
         const PlaylistSongId = req.params.id;
         const body = req.body;
-        const existingPlaylistSong = yield prisma_config_1.default.playlistSong.findUnique({
+        const existingPlaylistSong = await prisma_config_1.default.playlistSong.findUnique({
             where: {
                 id: PlaylistSongId,
             },
@@ -114,9 +105,11 @@ const updatePlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, 
         if (!existingPlaylistSong) {
             resp.status(404).json({ message: "PlaylistSong Not Found" });
         }
-        let updatedData = Object.assign({}, body);
+        let updatedData = {
+            ...body,
+        };
         // let data = await PlaylistSong.updateOne({ PlaylistSongId }, updatePlaylistSong);
-        const PlaylistSong = yield prisma_config_1.default.playlistSong.update({
+        const PlaylistSong = await prisma_config_1.default.playlistSong.update({
             where: { id: PlaylistSongId },
             data: updatedData,
         });
@@ -130,12 +123,12 @@ const updatePlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, 
             .status(500)
             .json({ error, message: "PlaylistSong Info Not Updated Successfully" });
     }
-});
+};
 exports.updatePlaylistSongById = updatePlaylistSongById;
-const deletePlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, function* () {
+const deletePlaylistSongById = async (req, resp) => {
     try {
         const PlaylistSongId = req.params.id;
-        const existingPlaylistSong = yield prisma_config_1.default.playlistSong.findUnique({
+        const existingPlaylistSong = await prisma_config_1.default.playlistSong.findUnique({
             where: {
                 id: PlaylistSongId,
             },
@@ -143,7 +136,7 @@ const deletePlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, 
         if (!existingPlaylistSong) {
             resp.status(404).json({ message: "PlaylistSong Not Found" });
         }
-        const PlaylistSong = yield prisma_config_1.default.playlistSong.delete({
+        const PlaylistSong = await prisma_config_1.default.playlistSong.delete({
             where: { id: PlaylistSongId },
         });
         resp
@@ -153,5 +146,5 @@ const deletePlaylistSongById = (req, resp) => __awaiter(void 0, void 0, void 0, 
     catch (error) {
         resp.status(500).json({ error, message: "PlaylistSong Not Found" });
     }
-});
+};
 exports.deletePlaylistSongById = deletePlaylistSongById;
