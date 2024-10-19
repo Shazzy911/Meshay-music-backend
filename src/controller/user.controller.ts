@@ -1,17 +1,25 @@
-import { Request, Response } from "express";
-// import User from "../models/user.model";
+import { Request, Response } from "../types/file.type";
 import bcrypt from "bcrypt";
 import prisma from "../lib/prisma.config";
+import client from "../lib/redis-client";
 
 const getAllUsers = async (req: Request, resp: Response): Promise<void> => {
   try {
     // Check cache first
-
-    let data = await prisma.user.findMany();
-    if (data && data.length > 0) {
-      resp.status(200).json({ response: data });
+    const cachedData = await client.get("users");
+    if (cachedData) {
+      resp
+        .status(201)
+        .json({ response: JSON.parse(cachedData), source: "redis-cache" });
     } else {
-      resp.status(404).json({ message: "Users not Found" });
+      let data = await prisma.user.findMany();
+
+      if (data && data.length > 0) {
+        await client.set("users", JSON.stringify(data), "EX", 3600); // 3600 seconds = 1 hour
+        resp.status(200).json({ response: data });
+      } else {
+        resp.status(404).json({ message: "Users not Found" });
+      }
     }
   } catch (error) {
     resp.status(500).json({ error });
@@ -21,13 +29,14 @@ const getAllUsers = async (req: Request, resp: Response): Promise<void> => {
 const createUser = async (req: Request, resp: Response) => {
   try {
     const { username, email, password } = req.body;
+    console.log(username, email, password);
     if (!username || !email || !password) {
       resp.status(404).json({ message: "All fields are required" });
     }
     // Saving Encrypted Password;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const data = await prisma.user.createMany({
+    const data = await prisma.user.create({
       data: {
         username,
         email,
@@ -37,7 +46,11 @@ const createUser = async (req: Request, resp: Response) => {
 
     resp
       .status(201)
-      .json({ result: data, message: "User Information Saved Successfully" });
+      .json({
+        success: true,
+        result: data,
+        message: "User Information Saved Successfully",
+      });
   } catch (error) {
     resp.status(500).json({ error, message: "Error Saving Information" });
   }

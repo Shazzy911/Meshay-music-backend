@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "../types/file.type";
 
 import prisma from "../lib/prisma.config";
 import { IFile } from "../types/file.type";
@@ -73,6 +73,7 @@ const createAlbum = async (req: Request, resp: Response) => {
         },
       });
       resp.status(201).json({
+        success: true,
         result: data,
         message: "Album Information Saved Successfully",
       });

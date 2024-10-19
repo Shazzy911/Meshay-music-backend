@@ -1,3 +1,8 @@
+import { Request, Response } from "express";
+export {Request,Response};
+
+
+
 export type IFile = {
   fieldname: string;
   originalname: string;

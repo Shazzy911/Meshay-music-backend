@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "../types/file.type";
 import { decode } from "base64-arraybuffer";
 import prisma from "../lib/prisma.config";
 import { IFile } from "../types/file.type";
@@ -76,6 +76,7 @@ const createArtist = async (req: Request, resp: Response) => {
       });
 
       resp.status(201).json({
+        success: true,
         result: artistData,
         message: "Artist Information Saved Successfully",
       });

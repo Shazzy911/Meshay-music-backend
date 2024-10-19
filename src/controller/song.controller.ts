@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "../types/file.type";
 import { decode } from "base64-arraybuffer";
 import prisma from "../lib/prisma.config";
 import { IFile } from "../types/file.type";
@@ -63,14 +63,6 @@ const createSong = async (req: Request, resp: Response) => {
         cacheControl: "3600",
         upsert: false,
       });
-
-    // Handle storage upload errors
-    if (imageError) {
-      resp.status(500).json({
-        message: "Error uploading image to Supabase",
-        error: imageError.message,
-      });
-    }
     // upload the imageFile to supabase
     const { data: songUpload, error: songError } = await supabase.storage
       .from("music-store")
@@ -79,12 +71,12 @@ const createSong = async (req: Request, resp: Response) => {
         cacheControl: "3600",
         upsert: false,
       });
-
     // Handle storage upload errors
-    if (songError) {
-      resp.status(500).json({
-        message: "Error uploading Song to Supabase",
-        error: songError.message,
+    if (imageError || songError) {
+      const errorMessage = imageError ? "image" : "song";
+      resp.status(404).json({
+        message: `Error uploading ${errorMessage} to Supabase`,
+        error: imageError?.message || songError?.message,
       });
     }
 
@@ -111,12 +103,13 @@ const createSong = async (req: Request, resp: Response) => {
       });
 
       resp.status(201).json({
+        success: true,
         result: songData,
         message: "Song Information Saved Successfully",
       });
     } else {
       // Handle the case where storageData is null
-      resp.status(500).json({
+      resp.status(404).json({
         message: "Error uploading file, Song data is null",
       });
     }

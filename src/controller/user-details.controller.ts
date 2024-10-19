@@ -1,4 +1,4 @@
-// import { Request, Response } from "express";
+// import { Request, Response } from "../types/file.type";
 // // import UserDetails from "../models/UserDetails.model";
 // import bcrypt from "bcrypt";
 // import prisma from "../lib/prisma.config";
