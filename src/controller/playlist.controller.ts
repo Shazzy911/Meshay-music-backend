@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "../types/file.type";
 
 import prisma from "../lib/prisma.config";
 // import { supabase } from "../lib/supabaseClient";
@@ -63,12 +63,10 @@ const createPlaylist = async (req: Request, resp: Response) => {
       },
     });
 
-    resp
-      .status(201)
-      .json({
-        result: data,
-        message: "Playlist Information Saved Successfully",
-      });
+    resp.status(201).json({
+      result: data,
+      message: "Playlist Information Saved Successfully",
+    });
   } catch (error) {
     resp.status(500).json({ error, message: "Error Saving Information" });
   }
@@ -87,12 +85,10 @@ const getPlaylistById = async (req: Request, resp: Response) => {
     if (!data) {
       resp.status(404).json({ message: "Playlist not found" });
     } else {
-      resp
-        .status(200)
-        .json({
-          data: data,
-          message: "Playlist Infomation Successfully Found",
-        });
+      resp.status(200).json({
+        data: data,
+        message: "Playlist Infomation Successfully Found",
+      });
     }
   } catch (error) {
     resp

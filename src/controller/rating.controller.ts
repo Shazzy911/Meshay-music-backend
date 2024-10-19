@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from "../types/file.type";
 
 import prisma from "../lib/prisma.config";
 // import { supabase } from "../lib/supabaseClient";
