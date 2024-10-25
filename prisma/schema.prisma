@@ -15,9 +15,9 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  username  String
+  username  String   @unique
   email     String   @unique
-  password  String?
+  password  String
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
@@ -43,7 +43,7 @@ model User {
 //   // Relationship with the User model
 //   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   @@map("user_details")
+//   @@map("user_profile")
 // }
 
 model Artist {
