@@ -3,6 +3,7 @@ import cors from "cors";
 import { logReqResp } from "./middleware";
 
 /// Importing Routes
+import authRoute from "./routes/auth.route";
 import userRoute from "./routes/user.route";
 import artistRoute from "./routes/artist.route";
 import albumRoute from "./routes/album.route";
@@ -22,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logReqResp("log.txt"));
 
+app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/artist", artistRoute);
 app.use("/album", albumRoute);
