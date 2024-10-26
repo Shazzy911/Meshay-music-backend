@@ -1,13 +1,25 @@
 import { Request, Response } from "../types/file.type";
 import bcrypt from "bcrypt";
 import prisma from "../lib/prisma.config";
-
+import jwt from "jsonwebtoken";
 const registerUser = async (req: Request, resp: Response) => {
   try {
     const { username, email, password } = req.body;
     console.log(username, email, password);
-    if (!username || !email || !password) {
+    if (!(username || email || password)) {
       resp.status(404).json({ message: "All fields are required" });
+    }
+    let existingUser = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (existingUser) {
+      resp.status(401).json({
+        success: true,
+        result: existingUser,
+        message: "User Already exists",
+      });
     }
     // Saving Encrypted Password;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,12 +45,13 @@ const registerUser = async (req: Request, resp: Response) => {
 /// User By Id.
 const logInUser = async (req: Request, resp: Response) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
+    console.log(email, password);
     // CHECK IF THE USER EXISTS
 
     const user = await prisma.user.findUnique({
       where: {
-        username: username,
+        email: email,
       },
     });
 
@@ -51,18 +64,32 @@ const logInUser = async (req: Request, resp: Response) => {
           .json({ success: false, message: "Password did not match " });
         return;
       } else {
+        const age = 1000 * 60 * 60 * 24 * 7;
+        const token = jwt.sign(
+          {
+            id: user.id,
+            isAdmin: false,
+          },
+          process.env.JWT_SECRET_KEY || " ",
+          { expiresIn: age }
+        );
+        const { password: userPassword, ...userInfo } = user;
+
         resp
+          .cookie("token", token, {
+            httpOnly: true, // User this when on production.. Works on https only
+            secure: true,
+            maxAge: age,
+          })
           .status(200)
           .json({
             success: true,
-            result: user,
-            message: "User Login successfully",
+            result: userInfo,
+            message: "User Login Successfully",
           });
       }
     } else {
-      resp
-        .status(400)
-        .json({ msuccess: false, essage: "Invalid Credentials!" });
+      resp.status(400).json({ success: false, essage: "Invalid Credentials!" });
     }
   } catch (error) {
     resp

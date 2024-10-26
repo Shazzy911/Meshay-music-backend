@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+const cookieParser = require("cookie-parser");
+
 import { logReqResp } from "./middleware";
 
 /// Importing Routes
@@ -18,11 +20,18 @@ const app = express();
 const port = process.env.PORT;
 
 /// MiddleWare...
-app.use(cors());
+
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN,
+    credentials: true,
+  })
+);
+app.use(cookieParser("my_secret"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logReqResp("log.txt"));
-
+// Routes
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/artist", artistRoute);
