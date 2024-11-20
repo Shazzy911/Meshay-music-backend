@@ -92,7 +92,7 @@ Make sure you have the following installed:
 
 ## 📦 Folder Structure
 
-    ```bash
+    ```
         src/
         ├── controllers/ # Request handlers
         ├── middleware/ # Custom middleware
@@ -114,11 +114,11 @@ Contributions are welcome! Follow these steps to contribute:
 
 ## 🙌 Acknowledgments
 
-You can copy and save this into your `README.md` file. Replace placeholders like `[Your Name]` or `your_postgres_connection_string` with your specific details.
+- [**Shahzaib Saleem**] - Developer and maintainer of the Music App Backend.
+- Thanks to Node.js, Express.js, Prisma, Supabase, Redis, and PostgreSQL for providing the essential tools to build a scalable and robust backend.
+- A special thanks to the open-source community for all the resources and contributions that made this project possible.
 
-## 📝 License
-
-### MIT License
+## 📝 MIT License
 
 Copyright (c) 2024 Meshay Music App
 
@@ -127,7 +127,3 @@ Copyright (c) 2024 Meshay Music App
 - The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 - THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-```
-
-```
