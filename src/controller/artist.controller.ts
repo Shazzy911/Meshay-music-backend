@@ -7,22 +7,18 @@ import supabase from "../lib/supabaseClient";
 const getAllArtist = async (req: Request, resp: Response) => {
   try {
     let artist = await prisma.artist.findMany({
-      include: {
-        songs: true,
-        albums: {
-          select: {
-            title: true,
-            genre: true,
-          },
-        },
-      },
     });
 
     if (!artist || artist.length === 0) {
       resp.status(404).json({ message: "Artist not Found" });
     }
 
-    resp.status(200).json(artist);
+    resp
+      .status(200)
+      .json({
+        response: artist,
+        message: "Artist Information Fetch Successfully",
+      });
   } catch (error) {
     resp.status(500).json({ error });
   }
