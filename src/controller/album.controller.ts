@@ -1,6 +1,5 @@
 import { Request, Response } from "../types/file.type";
-
-import prisma from "../lib/prisma.config";
+import prisma from "../lib/prisma";
 import { IFile } from "../types/file.type";
 import supabase from "../lib/supabaseClient";
 import { decode } from "base64-arraybuffer";

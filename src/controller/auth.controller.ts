@@ -1,6 +1,7 @@
 import { Request, Response } from "../types/file.type";
 import bcrypt from "bcrypt";
-import prisma from "../lib/prisma.config";
+import prisma from "../lib/prisma";
+
 import jwt from "jsonwebtoken";
 const registerUser = async (req: Request, resp: Response) => {
   try {

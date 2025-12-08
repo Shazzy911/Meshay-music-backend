@@ -1,24 +1,21 @@
 import { Request, Response } from "../types/file.type";
 import { decode } from "base64-arraybuffer";
-import prisma from "../lib/prisma.config";
+import prisma from "../lib/prisma";
 import { IFile } from "../types/file.type";
 import supabase from "../lib/supabaseClient";
 
 const getAllArtist = async (req: Request, resp: Response) => {
   try {
-    let artist = await prisma.artist.findMany({
-    });
+    let artist = await prisma.artist.findMany({});
 
     if (!artist || artist.length === 0) {
       resp.status(404).json({ message: "Artist not Found" });
     }
 
-    resp
-      .status(200)
-      .json({
-        response: artist,
-        message: "Artist Information Fetch Successfully",
-      });
+    resp.status(200).json({
+      response: artist,
+      message: "Artist Information Fetch Successfully",
+    });
   } catch (error) {
     resp.status(500).json({ error });
   }
