@@ -1,6 +1,6 @@
 import { Request, Response } from "../types/file.type";
 
-import prisma from "../lib/prisma.config";
+import prisma from "../lib/prisma";
 // import { supabase } from "../lib/supabaseClient";
 
 const getAllPlaylistSong = async (req: Request, resp: Response) => {

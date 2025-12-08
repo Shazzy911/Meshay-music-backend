@@ -1,6 +1,6 @@
 import { Request, Response } from "../types/file.type";
 import bcrypt from "bcrypt";
-import prisma from "../lib/prisma.config";
+import prisma from "../lib/prisma";
 import client from "../lib/redis-client";
 
 const getAllUsers = async (req: Request, resp: Response): Promise<void> => {
@@ -44,13 +44,11 @@ const createUser = async (req: Request, resp: Response) => {
       },
     });
 
-    resp
-      .status(201)
-      .json({
-        success: true,
-        result: data,
-        message: "User Information Saved Successfully",
-      });
+    resp.status(201).json({
+      success: true,
+      result: data,
+      message: "User Information Saved Successfully",
+    });
   } catch (error) {
     resp.status(500).json({ error, message: "Error Saving Information" });
   }
