@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.1.0
- * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
+ * Prisma Client JS version: 7.8.0
+ * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
  */
 Prisma.prismaVersion = {
-  client: "7.1.0",
-  engine: "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba"
+  client: "7.8.0",
+  engine: "3c6e192761c0362d496ed980de936e2f3cebcd3a"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -125,8 +125,8 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   email: 'email',
   password: 'password',
-  updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ArtistScalarFieldEnum = {
@@ -135,8 +135,8 @@ exports.Prisma.ArtistScalarFieldEnum = {
   genre: 'genre',
   bio: 'bio',
   img: 'img',
-  updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.AlbumScalarFieldEnum = {
@@ -146,8 +146,8 @@ exports.Prisma.AlbumScalarFieldEnum = {
   genre: 'genre',
   img: 'img',
   releaseDate: 'releaseDate',
-  updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SongScalarFieldEnum = {
@@ -160,8 +160,11 @@ exports.Prisma.SongScalarFieldEnum = {
   genre: 'genre',
   songUrl: 'songUrl',
   releaseDate: 'releaseDate',
-  updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  isExplicit: 'isExplicit',
+  playCount: 'playCount',
+  likes: 'likes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PlaylistScalarFieldEnum = {
@@ -169,8 +172,10 @@ exports.Prisma.PlaylistScalarFieldEnum = {
   userId: 'userId',
   title: 'title',
   description: 'description',
-  updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  isPublic: 'isPublic',
+  coverImg: 'coverImg',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PlaylistSongScalarFieldEnum = {
@@ -190,11 +195,11 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   plan: 'plan',
+  status: 'status',
   startDate: 'startDate',
   endDate: 'endDate',
-  status: 'status',
-  updatedAt: 'updatedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
@@ -203,7 +208,8 @@ exports.Prisma.PaymentScalarFieldEnum = {
   subscriptionId: 'subscriptionId',
   amount: 'amount',
   date: 'date',
-  method: 'method'
+  method: 'method',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -220,7 +226,24 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Plan = exports.$Enums.Plan = {
+  BASIC: 'BASIC',
+  PREMIUM: 'PREMIUM',
+  FAMILY: 'FAMILY'
+};
 
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  ACTIVE: 'ACTIVE',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CARD: 'CARD',
+  EASYPAISA: 'EASYPAISA',
+  JAZZCASH: 'JAZZCASH',
+  PAYPAL: 'PAYPAL'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',

@@ -1,59 +1,44 @@
 import { Request, Response } from "../types/file.type";
-
 import prisma from "../lib/prisma";
-// import { supabase } from "../lib/supabaseClient";
 
-const getAllPlaylistSong = async (req: Request, resp: Response) => {
+const getAllPlaylistSong = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
-    let PlaylistSong = await prisma.playlistSong.findMany();
+    const playlistSong = await prisma.playlistSong.findMany();
 
-    if (!PlaylistSong || PlaylistSong.length === 0) {
-      resp.status(404).json({ message: "PlaylistSong not Found" });
+    if (!playlistSong || playlistSong.length === 0) {
+      resp.status(404).json({
+        message: "PlaylistSong not Found",
+      });
+      return;
     }
 
-    resp.status(200).json(PlaylistSong);
+    resp.status(200).json({
+      data: playlistSong,
+      message: "PlaylistSongs fetched successfully",
+    });
+    return;
   } catch (error) {
     resp.status(500).json({ error });
+    return;
   }
 };
 
-const createPlaylistSong = async (req: Request, resp: Response) => {
+const createPlaylistSong = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
     const { playlistId, songId } = req.body;
 
     if (!playlistId || !songId) {
-      resp.status(404).json({ message: "All fields are required" });
+      resp.status(400).json({
+        message: "All fields are required",
+      });
+      return;
     }
-
-    // Upload the image to a specific folder in your Supabase storage bucket
-    // const { data: storageData, error: storageError } = await supabase.storage
-    //   .from("music-store")
-    //   .upload(`PlaylistSong/${file.originalname}`, file.buffer, {
-    //     cacheControl: "3600",
-    //     upsert: false,
-    //     contentType: file.mimetype,
-    //   });
-
-    // if (storageError) {
-    //   return resp
-    //     .status(500)
-    //     .json({
-    //       error: storageError,
-    //       message: "Error uploading image to Supabase",
-    //     });
-    // }
-
-    // Get the public URL for the image
-    // const { data: urlData, error: urlError } = supabase.storage
-    //   .from("music-store")
-    //   .getPublicUrl(`images/${file.originalname}`);
-
-    // if (urlError || !urlData) {
-    //   return resp.status(500).json({
-    //     error: urlError,
-    //     message: "Error generating public URL for the image",
-    //   });
-    // }
 
     const data = await prisma.playlistSong.create({
       data: {
@@ -63,98 +48,140 @@ const createPlaylistSong = async (req: Request, resp: Response) => {
     });
 
     resp.status(201).json({
+      success: true,
       result: data,
       message: "PlaylistSong Information Saved Successfully",
     });
+    return;
   } catch (error) {
-    resp.status(500).json({ error, message: "Error Saving Information" });
+    resp.status(500).json({
+      error,
+      message: "Error Saving Information",
+    });
+    return;
   }
 };
 
-/// PlaylistSong By Id.
-const getPlaylistSongById = async (req: Request, resp: Response) => {
+const getPlaylistSongById = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
-    const PlaylistSongId = req.params.id;
+    const playlistSongId = req.params.id;
 
-    let data = await prisma.playlistSong.findUnique({
+    const data = await prisma.playlistSong.findUnique({
       where: {
-        id: PlaylistSongId,
+        id: playlistSongId,
       },
     });
+
     if (!data) {
-      resp.status(404).json({ message: "PlaylistSong not found" });
-    } else {
-      resp.status(200).json({
-        data: data,
-        message: "PlaylistSong Infomation Successfully Found",
+      resp.status(404).json({
+        message: "PlaylistSong not found",
       });
+      return;
     }
+
+    resp.status(200).json({
+      data,
+      message: "PlaylistSong Information Successfully Found",
+    });
+    return;
   } catch (error) {
-    resp
-      .status(500)
-      .json({ error, message: "PlaylistSong Info Not Updated Successfully" });
+    resp.status(500).json({
+      error,
+      message: "PlaylistSong Info Not Found",
+    });
+    return;
   }
 };
 
-const updatePlaylistSongById = async (req: Request, resp: Response) => {
+const updatePlaylistSongById = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
-    const PlaylistSongId = req.params.id;
+    const playlistSongId = req.params.id;
     const body = req.body;
 
     const existingPlaylistSong = await prisma.playlistSong.findUnique({
       where: {
-        id: PlaylistSongId,
+        id: playlistSongId,
       },
     });
 
     if (!existingPlaylistSong) {
-      resp.status(404).json({ message: "PlaylistSong Not Found" });
+      resp.status(404).json({
+        message: "PlaylistSong Not Found",
+      });
+      return;
     }
 
-    let updatedData = {
+    const updatedData = {
       ...body,
     };
 
-    // let data = await PlaylistSong.updateOne({ PlaylistSongId }, updatePlaylistSong);
-    const PlaylistSong = await prisma.playlistSong.update({
-      where: { id: PlaylistSongId },
+    const playlistSong = await prisma.playlistSong.update({
+      where: {
+        id: playlistSongId,
+      },
       data: updatedData,
     });
+
     resp.status(200).json({
-      data: PlaylistSong,
+      data: playlistSong,
       message: "PlaylistSong Info Updated Successfully",
     });
+    return;
   } catch (error) {
-    resp
-      .status(500)
-      .json({ error, message: "PlaylistSong Info Not Updated Successfully" });
+    resp.status(500).json({
+      error,
+      message: "PlaylistSong Info Not Updated Successfully",
+    });
+    return;
   }
 };
 
-const deletePlaylistSongById = async (req: Request, resp: Response) => {
+const deletePlaylistSongById = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
-    const PlaylistSongId = req.params.id;
+    const playlistSongId = req.params.id;
 
     const existingPlaylistSong = await prisma.playlistSong.findUnique({
       where: {
-        id: PlaylistSongId,
+        id: playlistSongId,
       },
     });
 
     if (!existingPlaylistSong) {
-      resp.status(404).json({ message: "PlaylistSong Not Found" });
+      resp.status(404).json({
+        message: "PlaylistSong Not Found",
+      });
+      return;
     }
 
-    const PlaylistSong = await prisma.playlistSong.delete({
-      where: { id: PlaylistSongId },
+    const playlistSong = await prisma.playlistSong.delete({
+      where: {
+        id: playlistSongId,
+      },
     });
-    resp
-      .status(200)
-      .json({ PlaylistSong, message: "PlaylistSong deleted successfully" });
+
+    resp.status(200).json({
+      playlistSong,
+      message: "PlaylistSong deleted successfully",
+    });
+    return;
   } catch (error) {
-    resp.status(500).json({ error, message: "PlaylistSong Not Found" });
+    resp.status(500).json({
+      error,
+      message: "PlaylistSong Not Found",
+    });
+    return;
   }
 };
+
 export {
   getAllPlaylistSong,
   createPlaylistSong,

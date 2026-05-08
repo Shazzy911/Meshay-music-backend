@@ -60,12 +60,59 @@ export type Subscription = $Result.DefaultSelection<Prisma.$SubscriptionPayload>
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const Plan: {
+  BASIC: 'BASIC',
+  PREMIUM: 'PREMIUM',
+  FAMILY: 'FAMILY'
+};
+
+export type Plan = (typeof Plan)[keyof typeof Plan]
+
+
+export const SubscriptionStatus: {
+  ACTIVE: 'ACTIVE',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
+
+
+export const PaymentMethod: {
+  CARD: 'CARD',
+  EASYPAISA: 'EASYPAISA',
+  JAZZCASH: 'JAZZCASH',
+  PAYPAL: 'PAYPAL'
+};
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+}
+
+export type Plan = $Enums.Plan
+
+export const Plan: typeof $Enums.Plan
+
+export type SubscriptionStatus = $Enums.SubscriptionStatus
+
+export const SubscriptionStatus: typeof $Enums.SubscriptionStatus
+
+export type PaymentMethod = $Enums.PaymentMethod
+
+export const PaymentMethod: typeof $Enums.PaymentMethod
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```
@@ -86,7 +133,9 @@ export class PrismaClient<
    * Type-safe database client for TypeScript & Node.js
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more Users
    * const users = await prisma.user.findMany()
    * ```
@@ -166,9 +215,9 @@ export class PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
 
@@ -315,8 +364,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.1.0
-   * Query Engine version: ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba
+   * Prisma Client JS version: 7.8.0
+   * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
    */
   export type PrismaVersion = {
     client: string
@@ -1590,17 +1639,17 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
-    playlist: number
-    rating: number
-    payment: number
-    subscription: number
+    playlists: number
+    ratings: number
+    payments: number
+    subscriptions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    playlist?: boolean | UserCountOutputTypeCountPlaylistArgs
-    rating?: boolean | UserCountOutputTypeCountRatingArgs
-    payment?: boolean | UserCountOutputTypeCountPaymentArgs
-    subscription?: boolean | UserCountOutputTypeCountSubscriptionArgs
+    playlists?: boolean | UserCountOutputTypeCountPlaylistsArgs
+    ratings?: boolean | UserCountOutputTypeCountRatingsArgs
+    payments?: boolean | UserCountOutputTypeCountPaymentsArgs
+    subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
   }
 
   // Custom InputTypes
@@ -1617,28 +1666,28 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountPlaylistArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountPlaylistsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlaylistWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountRatingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RatingWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountPaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PaymentWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountSubscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SubscriptionWhereInput
   }
 
@@ -1720,12 +1769,12 @@ export namespace Prisma {
 
   export type SongCountOutputType = {
     playlists: number
-    rating: number
+    ratings: number
   }
 
   export type SongCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     playlists?: boolean | SongCountOutputTypeCountPlaylistsArgs
-    rating?: boolean | SongCountOutputTypeCountRatingArgs
+    ratings?: boolean | SongCountOutputTypeCountRatingsArgs
   }
 
   // Custom InputTypes
@@ -1749,7 +1798,7 @@ export namespace Prisma {
   /**
    * SongCountOutputType without action
    */
-  export type SongCountOutputTypeCountRatingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type SongCountOutputTypeCountRatingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RatingWhereInput
   }
 
@@ -1790,11 +1839,11 @@ export namespace Prisma {
    */
 
   export type SubscriptionCountOutputType = {
-    payment: number
+    payments: number
   }
 
   export type SubscriptionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    payment?: boolean | SubscriptionCountOutputTypeCountPaymentArgs
+    payments?: boolean | SubscriptionCountOutputTypeCountPaymentsArgs
   }
 
   // Custom InputTypes
@@ -1811,7 +1860,7 @@ export namespace Prisma {
   /**
    * SubscriptionCountOutputType without action
    */
-  export type SubscriptionCountOutputTypeCountPaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type SubscriptionCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PaymentWhereInput
   }
 
@@ -1835,8 +1884,8 @@ export namespace Prisma {
     username: string | null
     email: string | null
     password: string | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1844,8 +1893,8 @@ export namespace Prisma {
     username: string | null
     email: string | null
     password: string | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1853,8 +1902,8 @@ export namespace Prisma {
     username: number
     email: number
     password: number
-    updatedAt: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -1864,8 +1913,8 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1873,8 +1922,8 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1882,8 +1931,8 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -1964,8 +2013,8 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    updatedAt: Date
     createdAt: Date
+    updatedAt: Date
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -1990,12 +2039,12 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
-    playlist?: boolean | User$playlistArgs<ExtArgs>
-    rating?: boolean | User$ratingArgs<ExtArgs>
-    payment?: boolean | User$paymentArgs<ExtArgs>
-    subscription?: boolean | User$subscriptionArgs<ExtArgs>
+    updatedAt?: boolean
+    playlists?: boolean | User$playlistsArgs<ExtArgs>
+    ratings?: boolean | User$ratingsArgs<ExtArgs>
+    payments?: boolean | User$paymentsArgs<ExtArgs>
+    subscriptions?: boolean | User$subscriptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2004,8 +2053,8 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2013,8 +2062,8 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2022,16 +2071,16 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "updatedAt" | "createdAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    playlist?: boolean | User$playlistArgs<ExtArgs>
-    rating?: boolean | User$ratingArgs<ExtArgs>
-    payment?: boolean | User$paymentArgs<ExtArgs>
-    subscription?: boolean | User$subscriptionArgs<ExtArgs>
+    playlists?: boolean | User$playlistsArgs<ExtArgs>
+    ratings?: boolean | User$ratingsArgs<ExtArgs>
+    payments?: boolean | User$paymentsArgs<ExtArgs>
+    subscriptions?: boolean | User$subscriptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2040,18 +2089,18 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      playlist: Prisma.$PlaylistPayload<ExtArgs>[]
-      rating: Prisma.$RatingPayload<ExtArgs>[]
-      payment: Prisma.$PaymentPayload<ExtArgs>[]
-      subscription: Prisma.$SubscriptionPayload<ExtArgs>[]
+      playlists: Prisma.$PlaylistPayload<ExtArgs>[]
+      ratings: Prisma.$RatingPayload<ExtArgs>[]
+      payments: Prisma.$PaymentPayload<ExtArgs>[]
+      subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       username: string
       email: string
       password: string
-      updatedAt: Date
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2446,10 +2495,10 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    playlist<T extends User$playlistArgs<ExtArgs> = {}>(args?: Subset<T, User$playlistArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaylistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    rating<T extends User$ratingArgs<ExtArgs> = {}>(args?: Subset<T, User$ratingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    payment<T extends User$paymentArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    subscription<T extends User$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, User$subscriptionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    playlists<T extends User$playlistsArgs<ExtArgs> = {}>(args?: Subset<T, User$playlistsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaylistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ratings<T extends User$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, User$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    payments<T extends User$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, User$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    subscriptions<T extends User$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2483,8 +2532,8 @@ export namespace Prisma {
     readonly username: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
-    readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
+    readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -2681,6 +2730,11 @@ export namespace Prisma {
      * Skip the first `n` Users.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
@@ -2873,9 +2927,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.playlist
+   * User.playlists
    */
-  export type User$playlistArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$playlistsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Playlist
      */
@@ -2897,9 +2951,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.rating
+   * User.ratings
    */
-  export type User$ratingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$ratingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Rating
      */
@@ -2921,9 +2975,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.payment
+   * User.payments
    */
-  export type User$paymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Payment
      */
@@ -2945,9 +2999,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.subscription
+   * User.subscriptions
    */
-  export type User$subscriptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$subscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Subscription
      */
@@ -3003,8 +3057,8 @@ export namespace Prisma {
     genre: string | null
     bio: string | null
     img: string | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ArtistMaxAggregateOutputType = {
@@ -3013,8 +3067,8 @@ export namespace Prisma {
     genre: string | null
     bio: string | null
     img: string | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type ArtistCountAggregateOutputType = {
@@ -3023,8 +3077,8 @@ export namespace Prisma {
     genre: number
     bio: number
     img: number
-    updatedAt: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -3035,8 +3089,8 @@ export namespace Prisma {
     genre?: true
     bio?: true
     img?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type ArtistMaxAggregateInputType = {
@@ -3045,8 +3099,8 @@ export namespace Prisma {
     genre?: true
     bio?: true
     img?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type ArtistCountAggregateInputType = {
@@ -3055,8 +3109,8 @@ export namespace Prisma {
     genre?: true
     bio?: true
     img?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3138,8 +3192,8 @@ export namespace Prisma {
     genre: string
     bio: string
     img: string
-    updatedAt: Date
     createdAt: Date
+    updatedAt: Date
     _count: ArtistCountAggregateOutputType | null
     _min: ArtistMinAggregateOutputType | null
     _max: ArtistMaxAggregateOutputType | null
@@ -3165,8 +3219,8 @@ export namespace Prisma {
     genre?: boolean
     bio?: boolean
     img?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     albums?: boolean | Artist$albumsArgs<ExtArgs>
     songs?: boolean | Artist$songsArgs<ExtArgs>
     _count?: boolean | ArtistCountOutputTypeDefaultArgs<ExtArgs>
@@ -3178,8 +3232,8 @@ export namespace Prisma {
     genre?: boolean
     bio?: boolean
     img?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["artist"]>
 
   export type ArtistSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3188,8 +3242,8 @@ export namespace Prisma {
     genre?: boolean
     bio?: boolean
     img?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["artist"]>
 
   export type ArtistSelectScalar = {
@@ -3198,11 +3252,11 @@ export namespace Prisma {
     genre?: boolean
     bio?: boolean
     img?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type ArtistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "genre" | "bio" | "img" | "updatedAt" | "createdAt", ExtArgs["result"]["artist"]>
+  export type ArtistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "genre" | "bio" | "img" | "createdAt" | "updatedAt", ExtArgs["result"]["artist"]>
   export type ArtistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     albums?: boolean | Artist$albumsArgs<ExtArgs>
     songs?: boolean | Artist$songsArgs<ExtArgs>
@@ -3223,8 +3277,8 @@ export namespace Prisma {
       genre: string
       bio: string
       img: string
-      updatedAt: Date
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["artist"]>
     composites: {}
   }
@@ -3655,8 +3709,8 @@ export namespace Prisma {
     readonly genre: FieldRef<"Artist", 'String'>
     readonly bio: FieldRef<"Artist", 'String'>
     readonly img: FieldRef<"Artist", 'String'>
-    readonly updatedAt: FieldRef<"Artist", 'DateTime'>
     readonly createdAt: FieldRef<"Artist", 'DateTime'>
+    readonly updatedAt: FieldRef<"Artist", 'DateTime'>
   }
     
 
@@ -3853,6 +3907,11 @@ export namespace Prisma {
      * Skip the first `n` Artists.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Artists.
+     */
     distinct?: ArtistScalarFieldEnum | ArtistScalarFieldEnum[]
   }
 
@@ -4128,8 +4187,8 @@ export namespace Prisma {
     genre: string | null
     img: string | null
     releaseDate: Date | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type AlbumMaxAggregateOutputType = {
@@ -4139,8 +4198,8 @@ export namespace Prisma {
     genre: string | null
     img: string | null
     releaseDate: Date | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type AlbumCountAggregateOutputType = {
@@ -4150,8 +4209,8 @@ export namespace Prisma {
     genre: number
     img: number
     releaseDate: number
-    updatedAt: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -4163,8 +4222,8 @@ export namespace Prisma {
     genre?: true
     img?: true
     releaseDate?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type AlbumMaxAggregateInputType = {
@@ -4174,8 +4233,8 @@ export namespace Prisma {
     genre?: true
     img?: true
     releaseDate?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type AlbumCountAggregateInputType = {
@@ -4185,8 +4244,8 @@ export namespace Prisma {
     genre?: true
     img?: true
     releaseDate?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -4269,8 +4328,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date
-    updatedAt: Date
     createdAt: Date
+    updatedAt: Date
     _count: AlbumCountAggregateOutputType | null
     _min: AlbumMinAggregateOutputType | null
     _max: AlbumMaxAggregateOutputType | null
@@ -4297,10 +4356,10 @@ export namespace Prisma {
     genre?: boolean
     img?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
-    songs?: boolean | Album$songsArgs<ExtArgs>
+    updatedAt?: boolean
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
+    songs?: boolean | Album$songsArgs<ExtArgs>
     _count?: boolean | AlbumCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["album"]>
 
@@ -4311,8 +4370,8 @@ export namespace Prisma {
     genre?: boolean
     img?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["album"]>
 
@@ -4323,8 +4382,8 @@ export namespace Prisma {
     genre?: boolean
     img?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["album"]>
 
@@ -4335,14 +4394,14 @@ export namespace Prisma {
     genre?: boolean
     img?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type AlbumOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "artistId" | "title" | "genre" | "img" | "releaseDate" | "updatedAt" | "createdAt", ExtArgs["result"]["album"]>
+  export type AlbumOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "artistId" | "title" | "genre" | "img" | "releaseDate" | "createdAt" | "updatedAt", ExtArgs["result"]["album"]>
   export type AlbumInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    songs?: boolean | Album$songsArgs<ExtArgs>
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
+    songs?: boolean | Album$songsArgs<ExtArgs>
     _count?: boolean | AlbumCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AlbumIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4355,11 +4414,8 @@ export namespace Prisma {
   export type $AlbumPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Album"
     objects: {
-      songs: Prisma.$SongPayload<ExtArgs>[]
-      /**
-       * defining relationship
-       */
       artist: Prisma.$ArtistPayload<ExtArgs>
+      songs: Prisma.$SongPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4368,8 +4424,8 @@ export namespace Prisma {
       genre: string
       img: string
       releaseDate: Date
-      updatedAt: Date
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["album"]>
     composites: {}
   }
@@ -4764,8 +4820,8 @@ export namespace Prisma {
    */
   export interface Prisma__AlbumClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    songs<T extends Album$songsArgs<ExtArgs> = {}>(args?: Subset<T, Album$songsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SongPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     artist<T extends ArtistDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArtistDefaultArgs<ExtArgs>>): Prisma__ArtistClient<$Result.GetResult<Prisma.$ArtistPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    songs<T extends Album$songsArgs<ExtArgs> = {}>(args?: Subset<T, Album$songsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SongPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4801,8 +4857,8 @@ export namespace Prisma {
     readonly genre: FieldRef<"Album", 'String'>
     readonly img: FieldRef<"Album", 'String'>
     readonly releaseDate: FieldRef<"Album", 'DateTime'>
-    readonly updatedAt: FieldRef<"Album", 'DateTime'>
     readonly createdAt: FieldRef<"Album", 'DateTime'>
+    readonly updatedAt: FieldRef<"Album", 'DateTime'>
   }
     
 
@@ -4999,6 +5055,11 @@ export namespace Prisma {
      * Skip the first `n` Albums.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Albums.
+     */
     distinct?: AlbumScalarFieldEnum | AlbumScalarFieldEnum[]
   }
 
@@ -5255,10 +5316,14 @@ export namespace Prisma {
 
   export type SongAvgAggregateOutputType = {
     duration: number | null
+    playCount: number | null
+    likes: number | null
   }
 
   export type SongSumAggregateOutputType = {
     duration: number | null
+    playCount: number | null
+    likes: number | null
   }
 
   export type SongMinAggregateOutputType = {
@@ -5271,8 +5336,11 @@ export namespace Prisma {
     genre: string | null
     songUrl: string | null
     releaseDate: Date | null
-    updatedAt: Date | null
+    isExplicit: boolean | null
+    playCount: number | null
+    likes: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type SongMaxAggregateOutputType = {
@@ -5285,8 +5353,11 @@ export namespace Prisma {
     genre: string | null
     songUrl: string | null
     releaseDate: Date | null
-    updatedAt: Date | null
+    isExplicit: boolean | null
+    playCount: number | null
+    likes: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type SongCountAggregateOutputType = {
@@ -5299,18 +5370,25 @@ export namespace Prisma {
     genre: number
     songUrl: number
     releaseDate: number
-    updatedAt: number
+    isExplicit: number
+    playCount: number
+    likes: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
 
   export type SongAvgAggregateInputType = {
     duration?: true
+    playCount?: true
+    likes?: true
   }
 
   export type SongSumAggregateInputType = {
     duration?: true
+    playCount?: true
+    likes?: true
   }
 
   export type SongMinAggregateInputType = {
@@ -5323,8 +5401,11 @@ export namespace Prisma {
     genre?: true
     songUrl?: true
     releaseDate?: true
-    updatedAt?: true
+    isExplicit?: true
+    playCount?: true
+    likes?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type SongMaxAggregateInputType = {
@@ -5337,8 +5418,11 @@ export namespace Prisma {
     genre?: true
     songUrl?: true
     releaseDate?: true
-    updatedAt?: true
+    isExplicit?: true
+    playCount?: true
+    likes?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type SongCountAggregateInputType = {
@@ -5351,8 +5435,11 @@ export namespace Prisma {
     genre?: true
     songUrl?: true
     releaseDate?: true
-    updatedAt?: true
+    isExplicit?: true
+    playCount?: true
+    likes?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -5452,8 +5539,11 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date
-    updatedAt: Date
+    isExplicit: boolean
+    playCount: number
+    likes: number
     createdAt: Date
+    updatedAt: Date
     _count: SongCountAggregateOutputType | null
     _avg: SongAvgAggregateOutputType | null
     _sum: SongSumAggregateOutputType | null
@@ -5485,12 +5575,15 @@ export namespace Prisma {
     genre?: boolean
     songUrl?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
+    isExplicit?: boolean
+    playCount?: boolean
+    likes?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
     album?: boolean | AlbumDefaultArgs<ExtArgs>
     playlists?: boolean | Song$playlistsArgs<ExtArgs>
-    rating?: boolean | Song$ratingArgs<ExtArgs>
+    ratings?: boolean | Song$ratingsArgs<ExtArgs>
     _count?: boolean | SongCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["song"]>
 
@@ -5504,8 +5597,11 @@ export namespace Prisma {
     genre?: boolean
     songUrl?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
+    isExplicit?: boolean
+    playCount?: boolean
+    likes?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
     album?: boolean | AlbumDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["song"]>
@@ -5520,8 +5616,11 @@ export namespace Prisma {
     genre?: boolean
     songUrl?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
+    isExplicit?: boolean
+    playCount?: boolean
+    likes?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
     album?: boolean | AlbumDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["song"]>
@@ -5536,16 +5635,19 @@ export namespace Prisma {
     genre?: boolean
     songUrl?: boolean
     releaseDate?: boolean
-    updatedAt?: boolean
+    isExplicit?: boolean
+    playCount?: boolean
+    likes?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type SongOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "artistId" | "albumId" | "title" | "duration" | "img" | "genre" | "songUrl" | "releaseDate" | "updatedAt" | "createdAt", ExtArgs["result"]["song"]>
+  export type SongOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "artistId" | "albumId" | "title" | "duration" | "img" | "genre" | "songUrl" | "releaseDate" | "isExplicit" | "playCount" | "likes" | "createdAt" | "updatedAt", ExtArgs["result"]["song"]>
   export type SongInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     artist?: boolean | ArtistDefaultArgs<ExtArgs>
     album?: boolean | AlbumDefaultArgs<ExtArgs>
     playlists?: boolean | Song$playlistsArgs<ExtArgs>
-    rating?: boolean | Song$ratingArgs<ExtArgs>
+    ratings?: boolean | Song$ratingsArgs<ExtArgs>
     _count?: boolean | SongCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SongIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5560,13 +5662,10 @@ export namespace Prisma {
   export type $SongPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Song"
     objects: {
-      /**
-       * defining relationship
-       */
       artist: Prisma.$ArtistPayload<ExtArgs>
       album: Prisma.$AlbumPayload<ExtArgs>
       playlists: Prisma.$PlaylistSongPayload<ExtArgs>[]
-      rating: Prisma.$RatingPayload<ExtArgs>[]
+      ratings: Prisma.$RatingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5578,8 +5677,11 @@ export namespace Prisma {
       genre: string
       songUrl: string
       releaseDate: Date
-      updatedAt: Date
+      isExplicit: boolean
+      playCount: number
+      likes: number
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["song"]>
     composites: {}
   }
@@ -5977,7 +6079,7 @@ export namespace Prisma {
     artist<T extends ArtistDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArtistDefaultArgs<ExtArgs>>): Prisma__ArtistClient<$Result.GetResult<Prisma.$ArtistPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     album<T extends AlbumDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AlbumDefaultArgs<ExtArgs>>): Prisma__AlbumClient<$Result.GetResult<Prisma.$AlbumPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     playlists<T extends Song$playlistsArgs<ExtArgs> = {}>(args?: Subset<T, Song$playlistsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaylistSongPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    rating<T extends Song$ratingArgs<ExtArgs> = {}>(args?: Subset<T, Song$ratingArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ratings<T extends Song$ratingsArgs<ExtArgs> = {}>(args?: Subset<T, Song$ratingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6016,8 +6118,11 @@ export namespace Prisma {
     readonly genre: FieldRef<"Song", 'String'>
     readonly songUrl: FieldRef<"Song", 'String'>
     readonly releaseDate: FieldRef<"Song", 'DateTime'>
-    readonly updatedAt: FieldRef<"Song", 'DateTime'>
+    readonly isExplicit: FieldRef<"Song", 'Boolean'>
+    readonly playCount: FieldRef<"Song", 'Int'>
+    readonly likes: FieldRef<"Song", 'Int'>
     readonly createdAt: FieldRef<"Song", 'DateTime'>
+    readonly updatedAt: FieldRef<"Song", 'DateTime'>
   }
     
 
@@ -6214,6 +6319,11 @@ export namespace Prisma {
      * Skip the first `n` Songs.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Songs.
+     */
     distinct?: SongScalarFieldEnum | SongScalarFieldEnum[]
   }
 
@@ -6438,9 +6548,9 @@ export namespace Prisma {
   }
 
   /**
-   * Song.rating
+   * Song.ratings
    */
-  export type Song$ratingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Song$ratingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Rating
      */
@@ -6495,8 +6605,10 @@ export namespace Prisma {
     userId: string | null
     title: string | null
     description: string | null
-    updatedAt: Date | null
+    isPublic: boolean | null
+    coverImg: string | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type PlaylistMaxAggregateOutputType = {
@@ -6504,8 +6616,10 @@ export namespace Prisma {
     userId: string | null
     title: string | null
     description: string | null
-    updatedAt: Date | null
+    isPublic: boolean | null
+    coverImg: string | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type PlaylistCountAggregateOutputType = {
@@ -6513,8 +6627,10 @@ export namespace Prisma {
     userId: number
     title: number
     description: number
-    updatedAt: number
+    isPublic: number
+    coverImg: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -6524,8 +6640,10 @@ export namespace Prisma {
     userId?: true
     title?: true
     description?: true
-    updatedAt?: true
+    isPublic?: true
+    coverImg?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type PlaylistMaxAggregateInputType = {
@@ -6533,8 +6651,10 @@ export namespace Prisma {
     userId?: true
     title?: true
     description?: true
-    updatedAt?: true
+    isPublic?: true
+    coverImg?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type PlaylistCountAggregateInputType = {
@@ -6542,8 +6662,10 @@ export namespace Prisma {
     userId?: true
     title?: true
     description?: true
-    updatedAt?: true
+    isPublic?: true
+    coverImg?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -6624,8 +6746,10 @@ export namespace Prisma {
     userId: string
     title: string
     description: string
-    updatedAt: Date
+    isPublic: boolean
+    coverImg: string | null
     createdAt: Date
+    updatedAt: Date
     _count: PlaylistCountAggregateOutputType | null
     _min: PlaylistMinAggregateOutputType | null
     _max: PlaylistMaxAggregateOutputType | null
@@ -6650,8 +6774,10 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     description?: boolean
-    updatedAt?: boolean
+    isPublic?: boolean
+    coverImg?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     songs?: boolean | Playlist$songsArgs<ExtArgs>
     _count?: boolean | PlaylistCountOutputTypeDefaultArgs<ExtArgs>
@@ -6662,8 +6788,10 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     description?: boolean
-    updatedAt?: boolean
+    isPublic?: boolean
+    coverImg?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["playlist"]>
 
@@ -6672,8 +6800,10 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     description?: boolean
-    updatedAt?: boolean
+    isPublic?: boolean
+    coverImg?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["playlist"]>
 
@@ -6682,11 +6812,13 @@ export namespace Prisma {
     userId?: boolean
     title?: boolean
     description?: boolean
-    updatedAt?: boolean
+    isPublic?: boolean
+    coverImg?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type PlaylistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "description" | "updatedAt" | "createdAt", ExtArgs["result"]["playlist"]>
+  export type PlaylistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "description" | "isPublic" | "coverImg" | "createdAt" | "updatedAt", ExtArgs["result"]["playlist"]>
   export type PlaylistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     songs?: boolean | Playlist$songsArgs<ExtArgs>
@@ -6702,9 +6834,6 @@ export namespace Prisma {
   export type $PlaylistPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Playlist"
     objects: {
-      /**
-       * defining relationship
-       */
       user: Prisma.$UserPayload<ExtArgs>
       songs: Prisma.$PlaylistSongPayload<ExtArgs>[]
     }
@@ -6713,8 +6842,10 @@ export namespace Prisma {
       userId: string
       title: string
       description: string
-      updatedAt: Date
+      isPublic: boolean
+      coverImg: string | null
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["playlist"]>
     composites: {}
   }
@@ -7144,8 +7275,10 @@ export namespace Prisma {
     readonly userId: FieldRef<"Playlist", 'String'>
     readonly title: FieldRef<"Playlist", 'String'>
     readonly description: FieldRef<"Playlist", 'String'>
-    readonly updatedAt: FieldRef<"Playlist", 'DateTime'>
+    readonly isPublic: FieldRef<"Playlist", 'Boolean'>
+    readonly coverImg: FieldRef<"Playlist", 'String'>
     readonly createdAt: FieldRef<"Playlist", 'DateTime'>
+    readonly updatedAt: FieldRef<"Playlist", 'DateTime'>
   }
     
 
@@ -7342,6 +7475,11 @@ export namespace Prisma {
      * Skip the first `n` Playlists.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Playlists.
+     */
     distinct?: PlaylistScalarFieldEnum | PlaylistScalarFieldEnum[]
   }
 
@@ -8406,6 +8544,11 @@ export namespace Prisma {
      * Skip the first `n` PlaylistSongs.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaylistSongs.
+     */
     distinct?: PlaylistSongScalarFieldEnum | PlaylistSongScalarFieldEnum[]
   }
 
@@ -9493,6 +9636,11 @@ export namespace Prisma {
      * Skip the first `n` Ratings.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Ratings.
+     */
     distinct?: RatingScalarFieldEnum | RatingScalarFieldEnum[]
   }
 
@@ -9724,34 +9872,34 @@ export namespace Prisma {
   export type SubscriptionMinAggregateOutputType = {
     id: string | null
     userId: string | null
-    plan: string | null
+    plan: $Enums.Plan | null
+    status: $Enums.SubscriptionStatus | null
     startDate: Date | null
     endDate: Date | null
-    status: string | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type SubscriptionMaxAggregateOutputType = {
     id: string | null
     userId: string | null
-    plan: string | null
+    plan: $Enums.Plan | null
+    status: $Enums.SubscriptionStatus | null
     startDate: Date | null
     endDate: Date | null
-    status: string | null
-    updatedAt: Date | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type SubscriptionCountAggregateOutputType = {
     id: number
     userId: number
     plan: number
+    status: number
     startDate: number
     endDate: number
-    status: number
-    updatedAt: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -9760,33 +9908,33 @@ export namespace Prisma {
     id?: true
     userId?: true
     plan?: true
+    status?: true
     startDate?: true
     endDate?: true
-    status?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type SubscriptionMaxAggregateInputType = {
     id?: true
     userId?: true
     plan?: true
+    status?: true
     startDate?: true
     endDate?: true
-    status?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type SubscriptionCountAggregateInputType = {
     id?: true
     userId?: true
     plan?: true
+    status?: true
     startDate?: true
     endDate?: true
-    status?: true
-    updatedAt?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -9865,12 +10013,12 @@ export namespace Prisma {
   export type SubscriptionGroupByOutputType = {
     id: string
     userId: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date
     endDate: Date
-    status: string
-    updatedAt: Date
     createdAt: Date
+    updatedAt: Date
     _count: SubscriptionCountAggregateOutputType | null
     _min: SubscriptionMinAggregateOutputType | null
     _max: SubscriptionMaxAggregateOutputType | null
@@ -9894,13 +10042,13 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     plan?: boolean
+    status?: boolean
     startDate?: boolean
     endDate?: boolean
-    status?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    payment?: boolean | Subscription$paymentArgs<ExtArgs>
+    payments?: boolean | Subscription$paymentsArgs<ExtArgs>
     _count?: boolean | SubscriptionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscription"]>
 
@@ -9908,11 +10056,11 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     plan?: boolean
+    status?: boolean
     startDate?: boolean
     endDate?: boolean
-    status?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscription"]>
 
@@ -9920,11 +10068,11 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     plan?: boolean
+    status?: boolean
     startDate?: boolean
     endDate?: boolean
-    status?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["subscription"]>
 
@@ -9932,17 +10080,17 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     plan?: boolean
+    status?: boolean
     startDate?: boolean
     endDate?: boolean
-    status?: boolean
-    updatedAt?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "plan" | "startDate" | "endDate" | "status" | "updatedAt" | "createdAt", ExtArgs["result"]["subscription"]>
+  export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "plan" | "status" | "startDate" | "endDate" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
   export type SubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    payment?: boolean | Subscription$paymentArgs<ExtArgs>
+    payments?: boolean | Subscription$paymentsArgs<ExtArgs>
     _count?: boolean | SubscriptionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9956,17 +10104,17 @@ export namespace Prisma {
     name: "Subscription"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
-      payment: Prisma.$PaymentPayload<ExtArgs>[]
+      payments: Prisma.$PaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
-      plan: string
+      plan: $Enums.Plan
+      status: $Enums.SubscriptionStatus
       startDate: Date
       endDate: Date
-      status: string
-      updatedAt: Date
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["subscription"]>
     composites: {}
   }
@@ -10362,7 +10510,7 @@ export namespace Prisma {
   export interface Prisma__SubscriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    payment<T extends Subscription$paymentArgs<ExtArgs> = {}>(args?: Subset<T, Subscription$paymentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    payments<T extends Subscription$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, Subscription$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10394,12 +10542,12 @@ export namespace Prisma {
   interface SubscriptionFieldRefs {
     readonly id: FieldRef<"Subscription", 'String'>
     readonly userId: FieldRef<"Subscription", 'String'>
-    readonly plan: FieldRef<"Subscription", 'String'>
+    readonly plan: FieldRef<"Subscription", 'Plan'>
+    readonly status: FieldRef<"Subscription", 'SubscriptionStatus'>
     readonly startDate: FieldRef<"Subscription", 'DateTime'>
     readonly endDate: FieldRef<"Subscription", 'DateTime'>
-    readonly status: FieldRef<"Subscription", 'String'>
-    readonly updatedAt: FieldRef<"Subscription", 'DateTime'>
     readonly createdAt: FieldRef<"Subscription", 'DateTime'>
+    readonly updatedAt: FieldRef<"Subscription", 'DateTime'>
   }
     
 
@@ -10596,6 +10744,11 @@ export namespace Prisma {
      * Skip the first `n` Subscriptions.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Subscriptions.
+     */
     distinct?: SubscriptionScalarFieldEnum | SubscriptionScalarFieldEnum[]
   }
 
@@ -10796,9 +10949,9 @@ export namespace Prisma {
   }
 
   /**
-   * Subscription.payment
+   * Subscription.payments
    */
-  export type Subscription$paymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Subscription$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Payment
      */
@@ -10864,7 +11017,8 @@ export namespace Prisma {
     subscriptionId: string | null
     amount: number | null
     date: Date | null
-    method: string | null
+    method: $Enums.PaymentMethod | null
+    createdAt: Date | null
   }
 
   export type PaymentMaxAggregateOutputType = {
@@ -10873,7 +11027,8 @@ export namespace Prisma {
     subscriptionId: string | null
     amount: number | null
     date: Date | null
-    method: string | null
+    method: $Enums.PaymentMethod | null
+    createdAt: Date | null
   }
 
   export type PaymentCountAggregateOutputType = {
@@ -10883,6 +11038,7 @@ export namespace Prisma {
     amount: number
     date: number
     method: number
+    createdAt: number
     _all: number
   }
 
@@ -10902,6 +11058,7 @@ export namespace Prisma {
     amount?: true
     date?: true
     method?: true
+    createdAt?: true
   }
 
   export type PaymentMaxAggregateInputType = {
@@ -10911,6 +11068,7 @@ export namespace Prisma {
     amount?: true
     date?: true
     method?: true
+    createdAt?: true
   }
 
   export type PaymentCountAggregateInputType = {
@@ -10920,6 +11078,7 @@ export namespace Prisma {
     amount?: true
     date?: true
     method?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -11015,7 +11174,8 @@ export namespace Prisma {
     subscriptionId: string | null
     amount: number
     date: Date
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt: Date
     _count: PaymentCountAggregateOutputType | null
     _avg: PaymentAvgAggregateOutputType | null
     _sum: PaymentSumAggregateOutputType | null
@@ -11044,6 +11204,7 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     method?: boolean
+    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     subscription?: boolean | Payment$subscriptionArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
@@ -11055,6 +11216,7 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     method?: boolean
+    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     subscription?: boolean | Payment$subscriptionArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
@@ -11066,6 +11228,7 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     method?: boolean
+    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     subscription?: boolean | Payment$subscriptionArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
@@ -11077,9 +11240,10 @@ export namespace Prisma {
     amount?: boolean
     date?: boolean
     method?: boolean
+    createdAt?: boolean
   }
 
-  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "subscriptionId" | "amount" | "date" | "method", ExtArgs["result"]["payment"]>
+  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "subscriptionId" | "amount" | "date" | "method" | "createdAt", ExtArgs["result"]["payment"]>
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     subscription?: boolean | Payment$subscriptionArgs<ExtArgs>
@@ -11105,7 +11269,8 @@ export namespace Prisma {
       subscriptionId: string | null
       amount: number
       date: Date
-      method: string
+      method: $Enums.PaymentMethod
+      createdAt: Date
     }, ExtArgs["result"]["payment"]>
     composites: {}
   }
@@ -11536,7 +11701,8 @@ export namespace Prisma {
     readonly subscriptionId: FieldRef<"Payment", 'String'>
     readonly amount: FieldRef<"Payment", 'Int'>
     readonly date: FieldRef<"Payment", 'DateTime'>
-    readonly method: FieldRef<"Payment", 'String'>
+    readonly method: FieldRef<"Payment", 'PaymentMethod'>
+    readonly createdAt: FieldRef<"Payment", 'DateTime'>
   }
     
 
@@ -11733,6 +11899,11 @@ export namespace Prisma {
      * Skip the first `n` Payments.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Payments.
+     */
     distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
   }
 
@@ -11989,8 +12160,8 @@ export namespace Prisma {
     username: 'username',
     email: 'email',
     password: 'password',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -12002,8 +12173,8 @@ export namespace Prisma {
     genre: 'genre',
     bio: 'bio',
     img: 'img',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type ArtistScalarFieldEnum = (typeof ArtistScalarFieldEnum)[keyof typeof ArtistScalarFieldEnum]
@@ -12016,8 +12187,8 @@ export namespace Prisma {
     genre: 'genre',
     img: 'img',
     releaseDate: 'releaseDate',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type AlbumScalarFieldEnum = (typeof AlbumScalarFieldEnum)[keyof typeof AlbumScalarFieldEnum]
@@ -12033,8 +12204,11 @@ export namespace Prisma {
     genre: 'genre',
     songUrl: 'songUrl',
     releaseDate: 'releaseDate',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt'
+    isExplicit: 'isExplicit',
+    playCount: 'playCount',
+    likes: 'likes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type SongScalarFieldEnum = (typeof SongScalarFieldEnum)[keyof typeof SongScalarFieldEnum]
@@ -12045,8 +12219,10 @@ export namespace Prisma {
     userId: 'userId',
     title: 'title',
     description: 'description',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt'
+    isPublic: 'isPublic',
+    coverImg: 'coverImg',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type PlaylistScalarFieldEnum = (typeof PlaylistScalarFieldEnum)[keyof typeof PlaylistScalarFieldEnum]
@@ -12075,11 +12251,11 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     plan: 'plan',
+    status: 'status',
     startDate: 'startDate',
     endDate: 'endDate',
-    status: 'status',
-    updatedAt: 'updatedAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
@@ -12091,7 +12267,8 @@ export namespace Prisma {
     subscriptionId: 'subscriptionId',
     amount: 'amount',
     date: 'date',
-    method: 'method'
+    method: 'method',
+    createdAt: 'createdAt'
   };
 
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
@@ -12169,6 +12346,55 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'Plan'
+   */
+  export type EnumPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Plan'>
+    
+
+
+  /**
+   * Reference to a field of type 'Plan[]'
+   */
+  export type ListEnumPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Plan[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'SubscriptionStatus'
+   */
+  export type EnumSubscriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubscriptionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'SubscriptionStatus[]'
+   */
+  export type ListEnumSubscriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubscriptionStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentMethod'
+   */
+  export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
+    
+
+
+  /**
+   * Reference to a field of type 'PaymentMethod[]'
+   */
+  export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -12193,12 +12419,12 @@ export namespace Prisma {
     username?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
     createdAt?: DateTimeFilter<"User"> | Date | string
-    playlist?: PlaylistListRelationFilter
-    rating?: RatingListRelationFilter
-    payment?: PaymentListRelationFilter
-    subscription?: SubscriptionListRelationFilter
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    playlists?: PlaylistListRelationFilter
+    ratings?: RatingListRelationFilter
+    payments?: PaymentListRelationFilter
+    subscriptions?: SubscriptionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -12206,12 +12432,12 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
-    playlist?: PlaylistOrderByRelationAggregateInput
-    rating?: RatingOrderByRelationAggregateInput
-    payment?: PaymentOrderByRelationAggregateInput
-    subscription?: SubscriptionOrderByRelationAggregateInput
+    updatedAt?: SortOrder
+    playlists?: PlaylistOrderByRelationAggregateInput
+    ratings?: RatingOrderByRelationAggregateInput
+    payments?: PaymentOrderByRelationAggregateInput
+    subscriptions?: SubscriptionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -12222,12 +12448,12 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringFilter<"User"> | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
     createdAt?: DateTimeFilter<"User"> | Date | string
-    playlist?: PlaylistListRelationFilter
-    rating?: RatingListRelationFilter
-    payment?: PaymentListRelationFilter
-    subscription?: SubscriptionListRelationFilter
+    updatedAt?: DateTimeFilter<"User"> | Date | string
+    playlists?: PlaylistListRelationFilter
+    ratings?: RatingListRelationFilter
+    payments?: PaymentListRelationFilter
+    subscriptions?: SubscriptionListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -12235,8 +12461,8 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -12250,8 +12476,8 @@ export namespace Prisma {
     username?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
-    updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
 
   export type ArtistWhereInput = {
@@ -12263,8 +12489,8 @@ export namespace Prisma {
     genre?: StringFilter<"Artist"> | string
     bio?: StringFilter<"Artist"> | string
     img?: StringFilter<"Artist"> | string
-    updatedAt?: DateTimeFilter<"Artist"> | Date | string
     createdAt?: DateTimeFilter<"Artist"> | Date | string
+    updatedAt?: DateTimeFilter<"Artist"> | Date | string
     albums?: AlbumListRelationFilter
     songs?: SongListRelationFilter
   }
@@ -12275,8 +12501,8 @@ export namespace Prisma {
     genre?: SortOrder
     bio?: SortOrder
     img?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     albums?: AlbumOrderByRelationAggregateInput
     songs?: SongOrderByRelationAggregateInput
   }
@@ -12290,8 +12516,8 @@ export namespace Prisma {
     genre?: StringFilter<"Artist"> | string
     bio?: StringFilter<"Artist"> | string
     img?: StringFilter<"Artist"> | string
-    updatedAt?: DateTimeFilter<"Artist"> | Date | string
     createdAt?: DateTimeFilter<"Artist"> | Date | string
+    updatedAt?: DateTimeFilter<"Artist"> | Date | string
     albums?: AlbumListRelationFilter
     songs?: SongListRelationFilter
   }, "id">
@@ -12302,8 +12528,8 @@ export namespace Prisma {
     genre?: SortOrder
     bio?: SortOrder
     img?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: ArtistCountOrderByAggregateInput
     _max?: ArtistMaxOrderByAggregateInput
     _min?: ArtistMinOrderByAggregateInput
@@ -12318,8 +12544,8 @@ export namespace Prisma {
     genre?: StringWithAggregatesFilter<"Artist"> | string
     bio?: StringWithAggregatesFilter<"Artist"> | string
     img?: StringWithAggregatesFilter<"Artist"> | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Artist"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Artist"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Artist"> | Date | string
   }
 
   export type AlbumWhereInput = {
@@ -12332,10 +12558,10 @@ export namespace Prisma {
     genre?: StringFilter<"Album"> | string
     img?: StringFilter<"Album"> | string
     releaseDate?: DateTimeFilter<"Album"> | Date | string
-    updatedAt?: DateTimeFilter<"Album"> | Date | string
     createdAt?: DateTimeFilter<"Album"> | Date | string
-    songs?: SongListRelationFilter
+    updatedAt?: DateTimeFilter<"Album"> | Date | string
     artist?: XOR<ArtistScalarRelationFilter, ArtistWhereInput>
+    songs?: SongListRelationFilter
   }
 
   export type AlbumOrderByWithRelationInput = {
@@ -12345,10 +12571,10 @@ export namespace Prisma {
     genre?: SortOrder
     img?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
-    songs?: SongOrderByRelationAggregateInput
+    updatedAt?: SortOrder
     artist?: ArtistOrderByWithRelationInput
+    songs?: SongOrderByRelationAggregateInput
   }
 
   export type AlbumWhereUniqueInput = Prisma.AtLeast<{
@@ -12361,10 +12587,10 @@ export namespace Prisma {
     genre?: StringFilter<"Album"> | string
     img?: StringFilter<"Album"> | string
     releaseDate?: DateTimeFilter<"Album"> | Date | string
-    updatedAt?: DateTimeFilter<"Album"> | Date | string
     createdAt?: DateTimeFilter<"Album"> | Date | string
-    songs?: SongListRelationFilter
+    updatedAt?: DateTimeFilter<"Album"> | Date | string
     artist?: XOR<ArtistScalarRelationFilter, ArtistWhereInput>
+    songs?: SongListRelationFilter
   }, "id">
 
   export type AlbumOrderByWithAggregationInput = {
@@ -12374,8 +12600,8 @@ export namespace Prisma {
     genre?: SortOrder
     img?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: AlbumCountOrderByAggregateInput
     _max?: AlbumMaxOrderByAggregateInput
     _min?: AlbumMinOrderByAggregateInput
@@ -12391,8 +12617,8 @@ export namespace Prisma {
     genre?: StringWithAggregatesFilter<"Album"> | string
     img?: StringWithAggregatesFilter<"Album"> | string
     releaseDate?: DateTimeWithAggregatesFilter<"Album"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Album"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Album"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Album"> | Date | string
   }
 
   export type SongWhereInput = {
@@ -12408,12 +12634,15 @@ export namespace Prisma {
     genre?: StringFilter<"Song"> | string
     songUrl?: StringFilter<"Song"> | string
     releaseDate?: DateTimeFilter<"Song"> | Date | string
-    updatedAt?: DateTimeFilter<"Song"> | Date | string
+    isExplicit?: BoolFilter<"Song"> | boolean
+    playCount?: IntFilter<"Song"> | number
+    likes?: IntFilter<"Song"> | number
     createdAt?: DateTimeFilter<"Song"> | Date | string
+    updatedAt?: DateTimeFilter<"Song"> | Date | string
     artist?: XOR<ArtistScalarRelationFilter, ArtistWhereInput>
     album?: XOR<AlbumScalarRelationFilter, AlbumWhereInput>
     playlists?: PlaylistSongListRelationFilter
-    rating?: RatingListRelationFilter
+    ratings?: RatingListRelationFilter
   }
 
   export type SongOrderByWithRelationInput = {
@@ -12426,12 +12655,15 @@ export namespace Prisma {
     genre?: SortOrder
     songUrl?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
+    isExplicit?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     artist?: ArtistOrderByWithRelationInput
     album?: AlbumOrderByWithRelationInput
     playlists?: PlaylistSongOrderByRelationAggregateInput
-    rating?: RatingOrderByRelationAggregateInput
+    ratings?: RatingOrderByRelationAggregateInput
   }
 
   export type SongWhereUniqueInput = Prisma.AtLeast<{
@@ -12447,12 +12679,15 @@ export namespace Prisma {
     genre?: StringFilter<"Song"> | string
     songUrl?: StringFilter<"Song"> | string
     releaseDate?: DateTimeFilter<"Song"> | Date | string
-    updatedAt?: DateTimeFilter<"Song"> | Date | string
+    isExplicit?: BoolFilter<"Song"> | boolean
+    playCount?: IntFilter<"Song"> | number
+    likes?: IntFilter<"Song"> | number
     createdAt?: DateTimeFilter<"Song"> | Date | string
+    updatedAt?: DateTimeFilter<"Song"> | Date | string
     artist?: XOR<ArtistScalarRelationFilter, ArtistWhereInput>
     album?: XOR<AlbumScalarRelationFilter, AlbumWhereInput>
     playlists?: PlaylistSongListRelationFilter
-    rating?: RatingListRelationFilter
+    ratings?: RatingListRelationFilter
   }, "id">
 
   export type SongOrderByWithAggregationInput = {
@@ -12465,8 +12700,11 @@ export namespace Prisma {
     genre?: SortOrder
     songUrl?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
+    isExplicit?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: SongCountOrderByAggregateInput
     _avg?: SongAvgOrderByAggregateInput
     _max?: SongMaxOrderByAggregateInput
@@ -12487,8 +12725,11 @@ export namespace Prisma {
     genre?: StringWithAggregatesFilter<"Song"> | string
     songUrl?: StringWithAggregatesFilter<"Song"> | string
     releaseDate?: DateTimeWithAggregatesFilter<"Song"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Song"> | Date | string
+    isExplicit?: BoolWithAggregatesFilter<"Song"> | boolean
+    playCount?: IntWithAggregatesFilter<"Song"> | number
+    likes?: IntWithAggregatesFilter<"Song"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Song"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Song"> | Date | string
   }
 
   export type PlaylistWhereInput = {
@@ -12499,8 +12740,10 @@ export namespace Prisma {
     userId?: StringFilter<"Playlist"> | string
     title?: StringFilter<"Playlist"> | string
     description?: StringFilter<"Playlist"> | string
-    updatedAt?: DateTimeFilter<"Playlist"> | Date | string
+    isPublic?: BoolFilter<"Playlist"> | boolean
+    coverImg?: StringNullableFilter<"Playlist"> | string | null
     createdAt?: DateTimeFilter<"Playlist"> | Date | string
+    updatedAt?: DateTimeFilter<"Playlist"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     songs?: PlaylistSongListRelationFilter
   }
@@ -12510,8 +12753,10 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    updatedAt?: SortOrder
+    isPublic?: SortOrder
+    coverImg?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
     songs?: PlaylistSongOrderByRelationAggregateInput
   }
@@ -12524,8 +12769,10 @@ export namespace Prisma {
     userId?: StringFilter<"Playlist"> | string
     title?: StringFilter<"Playlist"> | string
     description?: StringFilter<"Playlist"> | string
-    updatedAt?: DateTimeFilter<"Playlist"> | Date | string
+    isPublic?: BoolFilter<"Playlist"> | boolean
+    coverImg?: StringNullableFilter<"Playlist"> | string | null
     createdAt?: DateTimeFilter<"Playlist"> | Date | string
+    updatedAt?: DateTimeFilter<"Playlist"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     songs?: PlaylistSongListRelationFilter
   }, "id">
@@ -12535,8 +12782,10 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    updatedAt?: SortOrder
+    isPublic?: SortOrder
+    coverImg?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: PlaylistCountOrderByAggregateInput
     _max?: PlaylistMaxOrderByAggregateInput
     _min?: PlaylistMinOrderByAggregateInput
@@ -12550,8 +12799,10 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Playlist"> | string
     title?: StringWithAggregatesFilter<"Playlist"> | string
     description?: StringWithAggregatesFilter<"Playlist"> | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Playlist"> | Date | string
+    isPublic?: BoolWithAggregatesFilter<"Playlist"> | boolean
+    coverImg?: StringNullableWithAggregatesFilter<"Playlist"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Playlist"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Playlist"> | Date | string
   }
 
   export type PlaylistSongWhereInput = {
@@ -12626,6 +12877,7 @@ export namespace Prisma {
 
   export type RatingWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    userId_songId?: RatingUserIdSongIdCompoundUniqueInput
     AND?: RatingWhereInput | RatingWhereInput[]
     OR?: RatingWhereInput[]
     NOT?: RatingWhereInput | RatingWhereInput[]
@@ -12634,7 +12886,7 @@ export namespace Prisma {
     songId?: StringFilter<"Rating"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     song?: XOR<SongScalarRelationFilter, SongWhereInput>
-  }, "id">
+  }, "id" | "userId_songId">
 
   export type RatingOrderByWithAggregationInput = {
     id?: SortOrder
@@ -12664,27 +12916,27 @@ export namespace Prisma {
     NOT?: SubscriptionWhereInput | SubscriptionWhereInput[]
     id?: StringFilter<"Subscription"> | string
     userId?: StringFilter<"Subscription"> | string
-    plan?: StringFilter<"Subscription"> | string
+    plan?: EnumPlanFilter<"Subscription"> | $Enums.Plan
+    status?: EnumSubscriptionStatusFilter<"Subscription"> | $Enums.SubscriptionStatus
     startDate?: DateTimeFilter<"Subscription"> | Date | string
     endDate?: DateTimeFilter<"Subscription"> | Date | string
-    status?: StringFilter<"Subscription"> | string
-    updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
+    updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    payment?: PaymentListRelationFilter
+    payments?: PaymentListRelationFilter
   }
 
   export type SubscriptionOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
     plan?: SortOrder
+    status?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
-    status?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
-    payment?: PaymentOrderByRelationAggregateInput
+    payments?: PaymentOrderByRelationAggregateInput
   }
 
   export type SubscriptionWhereUniqueInput = Prisma.AtLeast<{
@@ -12693,25 +12945,25 @@ export namespace Prisma {
     OR?: SubscriptionWhereInput[]
     NOT?: SubscriptionWhereInput | SubscriptionWhereInput[]
     userId?: StringFilter<"Subscription"> | string
-    plan?: StringFilter<"Subscription"> | string
+    plan?: EnumPlanFilter<"Subscription"> | $Enums.Plan
+    status?: EnumSubscriptionStatusFilter<"Subscription"> | $Enums.SubscriptionStatus
     startDate?: DateTimeFilter<"Subscription"> | Date | string
     endDate?: DateTimeFilter<"Subscription"> | Date | string
-    status?: StringFilter<"Subscription"> | string
-    updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
+    updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    payment?: PaymentListRelationFilter
+    payments?: PaymentListRelationFilter
   }, "id">
 
   export type SubscriptionOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
     plan?: SortOrder
+    status?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
-    status?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: SubscriptionCountOrderByAggregateInput
     _max?: SubscriptionMaxOrderByAggregateInput
     _min?: SubscriptionMinOrderByAggregateInput
@@ -12723,12 +12975,12 @@ export namespace Prisma {
     NOT?: SubscriptionScalarWhereWithAggregatesInput | SubscriptionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Subscription"> | string
     userId?: StringWithAggregatesFilter<"Subscription"> | string
-    plan?: StringWithAggregatesFilter<"Subscription"> | string
+    plan?: EnumPlanWithAggregatesFilter<"Subscription"> | $Enums.Plan
+    status?: EnumSubscriptionStatusWithAggregatesFilter<"Subscription"> | $Enums.SubscriptionStatus
     startDate?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     endDate?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
-    status?: StringWithAggregatesFilter<"Subscription"> | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
   }
 
   export type PaymentWhereInput = {
@@ -12740,7 +12992,8 @@ export namespace Prisma {
     subscriptionId?: StringNullableFilter<"Payment"> | string | null
     amount?: IntFilter<"Payment"> | number
     date?: DateTimeFilter<"Payment"> | Date | string
-    method?: StringFilter<"Payment"> | string
+    method?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
+    createdAt?: DateTimeFilter<"Payment"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
   }
@@ -12752,6 +13005,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     method?: SortOrder
+    createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     subscription?: SubscriptionOrderByWithRelationInput
   }
@@ -12765,7 +13019,8 @@ export namespace Prisma {
     subscriptionId?: StringNullableFilter<"Payment"> | string | null
     amount?: IntFilter<"Payment"> | number
     date?: DateTimeFilter<"Payment"> | Date | string
-    method?: StringFilter<"Payment"> | string
+    method?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
+    createdAt?: DateTimeFilter<"Payment"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
   }, "id">
@@ -12777,6 +13032,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     method?: SortOrder
+    createdAt?: SortOrder
     _count?: PaymentCountOrderByAggregateInput
     _avg?: PaymentAvgOrderByAggregateInput
     _max?: PaymentMaxOrderByAggregateInput
@@ -12793,7 +13049,8 @@ export namespace Prisma {
     subscriptionId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     amount?: IntWithAggregatesFilter<"Payment"> | number
     date?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
-    method?: StringWithAggregatesFilter<"Payment"> | string
+    method?: EnumPaymentMethodWithAggregatesFilter<"Payment"> | $Enums.PaymentMethod
+    createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -12801,12 +13058,12 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistCreateNestedManyWithoutUserInput
-    rating?: RatingCreateNestedManyWithoutUserInput
-    payment?: PaymentCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistCreateNestedManyWithoutUserInput
+    ratings?: RatingCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -12814,12 +13071,12 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistUncheckedCreateNestedManyWithoutUserInput
-    rating?: RatingUncheckedCreateNestedManyWithoutUserInput
-    payment?: PaymentUncheckedCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistUncheckedCreateNestedManyWithoutUserInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -12827,12 +13084,12 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUpdateManyWithoutUserNestedInput
-    rating?: RatingUpdateManyWithoutUserNestedInput
-    payment?: PaymentUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUpdateManyWithoutUserNestedInput
+    ratings?: RatingUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -12840,12 +13097,12 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
-    rating?: RatingUncheckedUpdateManyWithoutUserNestedInput
-    payment?: PaymentUncheckedUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -12853,8 +13110,8 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserUpdateManyMutationInput = {
@@ -12862,8 +13119,8 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -12871,8 +13128,8 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ArtistCreateInput = {
@@ -12881,8 +13138,8 @@ export namespace Prisma {
     genre: string
     bio: string
     img: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     albums?: AlbumCreateNestedManyWithoutArtistInput
     songs?: SongCreateNestedManyWithoutArtistInput
   }
@@ -12893,8 +13150,8 @@ export namespace Prisma {
     genre: string
     bio: string
     img: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     albums?: AlbumUncheckedCreateNestedManyWithoutArtistInput
     songs?: SongUncheckedCreateNestedManyWithoutArtistInput
   }
@@ -12905,8 +13162,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     albums?: AlbumUpdateManyWithoutArtistNestedInput
     songs?: SongUpdateManyWithoutArtistNestedInput
   }
@@ -12917,8 +13174,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     albums?: AlbumUncheckedUpdateManyWithoutArtistNestedInput
     songs?: SongUncheckedUpdateManyWithoutArtistNestedInput
   }
@@ -12929,8 +13186,8 @@ export namespace Prisma {
     genre: string
     bio: string
     img: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type ArtistUpdateManyMutationInput = {
@@ -12939,8 +13196,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ArtistUncheckedUpdateManyInput = {
@@ -12949,8 +13206,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AlbumCreateInput = {
@@ -12959,10 +13216,10 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    songs?: SongCreateNestedManyWithoutAlbumInput
+    updatedAt?: Date | string
     artist: ArtistCreateNestedOneWithoutAlbumsInput
+    songs?: SongCreateNestedManyWithoutAlbumInput
   }
 
   export type AlbumUncheckedCreateInput = {
@@ -12972,8 +13229,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     songs?: SongUncheckedCreateNestedManyWithoutAlbumInput
   }
 
@@ -12983,10 +13240,10 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    songs?: SongUpdateManyWithoutAlbumNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artist?: ArtistUpdateOneRequiredWithoutAlbumsNestedInput
+    songs?: SongUpdateManyWithoutAlbumNestedInput
   }
 
   export type AlbumUncheckedUpdateInput = {
@@ -12996,8 +13253,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: SongUncheckedUpdateManyWithoutAlbumNestedInput
   }
 
@@ -13008,8 +13265,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AlbumUpdateManyMutationInput = {
@@ -13018,8 +13275,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AlbumUncheckedUpdateManyInput = {
@@ -13029,8 +13286,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SongCreateInput = {
@@ -13041,12 +13298,15 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     artist: ArtistCreateNestedOneWithoutSongsInput
     album: AlbumCreateNestedOneWithoutSongsInput
     playlists?: PlaylistSongCreateNestedManyWithoutSongInput
-    rating?: RatingCreateNestedManyWithoutSongInput
+    ratings?: RatingCreateNestedManyWithoutSongInput
   }
 
   export type SongUncheckedCreateInput = {
@@ -13059,10 +13319,13 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     playlists?: PlaylistSongUncheckedCreateNestedManyWithoutSongInput
-    rating?: RatingUncheckedCreateNestedManyWithoutSongInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutSongInput
   }
 
   export type SongUpdateInput = {
@@ -13073,12 +13336,15 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artist?: ArtistUpdateOneRequiredWithoutSongsNestedInput
     album?: AlbumUpdateOneRequiredWithoutSongsNestedInput
     playlists?: PlaylistSongUpdateManyWithoutSongNestedInput
-    rating?: RatingUpdateManyWithoutSongNestedInput
+    ratings?: RatingUpdateManyWithoutSongNestedInput
   }
 
   export type SongUncheckedUpdateInput = {
@@ -13091,10 +13357,13 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playlists?: PlaylistSongUncheckedUpdateManyWithoutSongNestedInput
-    rating?: RatingUncheckedUpdateManyWithoutSongNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutSongNestedInput
   }
 
   export type SongCreateManyInput = {
@@ -13107,8 +13376,11 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type SongUpdateManyMutationInput = {
@@ -13119,8 +13391,11 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SongUncheckedUpdateManyInput = {
@@ -13133,17 +13408,22 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlaylistCreateInput = {
     id?: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutPlaylistInput
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutPlaylistsInput
     songs?: PlaylistSongCreateNestedManyWithoutPlaylistInput
   }
 
@@ -13152,8 +13432,10 @@ export namespace Prisma {
     userId: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
     songs?: PlaylistSongUncheckedCreateNestedManyWithoutPlaylistInput
   }
 
@@ -13161,9 +13443,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutPlaylistNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPlaylistsNestedInput
     songs?: PlaylistSongUpdateManyWithoutPlaylistNestedInput
   }
 
@@ -13172,8 +13456,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: PlaylistSongUncheckedUpdateManyWithoutPlaylistNestedInput
   }
 
@@ -13182,16 +13468,20 @@ export namespace Prisma {
     userId: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type PlaylistUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlaylistUncheckedUpdateManyInput = {
@@ -13199,8 +13489,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlaylistSongCreateInput = {
@@ -13246,8 +13538,8 @@ export namespace Prisma {
   export type RatingCreateInput = {
     id?: string
     rating: number
-    user: UserCreateNestedOneWithoutRatingInput
-    song: SongCreateNestedOneWithoutRatingInput
+    user: UserCreateNestedOneWithoutRatingsInput
+    song: SongCreateNestedOneWithoutRatingsInput
   }
 
   export type RatingUncheckedCreateInput = {
@@ -13260,8 +13552,8 @@ export namespace Prisma {
   export type RatingUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     rating?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutRatingNestedInput
-    song?: SongUpdateOneRequiredWithoutRatingNestedInput
+    user?: UserUpdateOneRequiredWithoutRatingsNestedInput
+    song?: SongUpdateOneRequiredWithoutRatingsNestedInput
   }
 
   export type RatingUncheckedUpdateInput = {
@@ -13292,91 +13584,92 @@ export namespace Prisma {
 
   export type SubscriptionCreateInput = {
     id?: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutSubscriptionInput
-    payment?: PaymentCreateNestedManyWithoutSubscriptionInput
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutSubscriptionsInput
+    payments?: PaymentCreateNestedManyWithoutSubscriptionInput
   }
 
   export type SubscriptionUncheckedCreateInput = {
     id?: string
     userId: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    payment?: PaymentUncheckedCreateNestedManyWithoutSubscriptionInput
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutSubscriptionInput
   }
 
   export type SubscriptionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutSubscriptionNestedInput
-    payment?: PaymentUpdateManyWithoutSubscriptionNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutSubscriptionsNestedInput
+    payments?: PaymentUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    payment?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionCreateManyInput = {
     id?: string
     userId: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type SubscriptionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SubscriptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentCreateInput = {
     id?: string
     amount: number
     date: Date | string
-    method: string
-    user: UserCreateNestedOneWithoutPaymentInput
-    subscription?: SubscriptionCreateNestedOneWithoutPaymentInput
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPaymentsInput
+    subscription?: SubscriptionCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateInput = {
@@ -13385,16 +13678,18 @@ export namespace Prisma {
     subscriptionId?: string | null
     amount: number
     date: Date | string
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
   }
 
   export type PaymentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
-    user?: UserUpdateOneRequiredWithoutPaymentNestedInput
-    subscription?: SubscriptionUpdateOneWithoutPaymentNestedInput
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPaymentsNestedInput
+    subscription?: SubscriptionUpdateOneWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
@@ -13403,7 +13698,8 @@ export namespace Prisma {
     subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentCreateManyInput = {
@@ -13412,14 +13708,16 @@ export namespace Prisma {
     subscriptionId?: string | null
     amount: number
     date: Date | string
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
   }
 
   export type PaymentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentUncheckedUpdateManyInput = {
@@ -13428,7 +13726,8 @@ export namespace Prisma {
     subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -13502,8 +13801,8 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -13511,8 +13810,8 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -13520,8 +13819,8 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -13582,8 +13881,8 @@ export namespace Prisma {
     genre?: SortOrder
     bio?: SortOrder
     img?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ArtistMaxOrderByAggregateInput = {
@@ -13592,8 +13891,8 @@ export namespace Prisma {
     genre?: SortOrder
     bio?: SortOrder
     img?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ArtistMinOrderByAggregateInput = {
@@ -13602,8 +13901,8 @@ export namespace Prisma {
     genre?: SortOrder
     bio?: SortOrder
     img?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type ArtistScalarRelationFilter = {
@@ -13618,8 +13917,8 @@ export namespace Prisma {
     genre?: SortOrder
     img?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AlbumMaxOrderByAggregateInput = {
@@ -13629,8 +13928,8 @@ export namespace Prisma {
     genre?: SortOrder
     img?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type AlbumMinOrderByAggregateInput = {
@@ -13640,8 +13939,8 @@ export namespace Prisma {
     genre?: SortOrder
     img?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -13653,6 +13952,11 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type AlbumScalarRelationFilter = {
@@ -13680,12 +13984,17 @@ export namespace Prisma {
     genre?: SortOrder
     songUrl?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
+    isExplicit?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SongAvgOrderByAggregateInput = {
     duration?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
   }
 
   export type SongMaxOrderByAggregateInput = {
@@ -13698,8 +14007,11 @@ export namespace Prisma {
     genre?: SortOrder
     songUrl?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
+    isExplicit?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SongMinOrderByAggregateInput = {
@@ -13712,12 +14024,17 @@ export namespace Prisma {
     genre?: SortOrder
     songUrl?: SortOrder
     releaseDate?: SortOrder
-    updatedAt?: SortOrder
+    isExplicit?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SongSumOrderByAggregateInput = {
     duration?: SortOrder
+    playCount?: SortOrder
+    likes?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -13736,9 +14053,37 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type PlaylistCountOrderByAggregateInput = {
@@ -13746,8 +14091,10 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    updatedAt?: SortOrder
+    isPublic?: SortOrder
+    coverImg?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type PlaylistMaxOrderByAggregateInput = {
@@ -13755,8 +14102,10 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    updatedAt?: SortOrder
+    isPublic?: SortOrder
+    coverImg?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type PlaylistMinOrderByAggregateInput = {
@@ -13764,8 +14113,28 @@ export namespace Prisma {
     userId?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    updatedAt?: SortOrder
+    isPublic?: SortOrder
+    coverImg?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type PlaylistScalarRelationFilter = {
@@ -13801,6 +14170,11 @@ export namespace Prisma {
     songId?: SortOrder
   }
 
+  export type RatingUserIdSongIdCompoundUniqueInput = {
+    userId: string
+    songId: string
+  }
+
   export type RatingCountOrderByAggregateInput = {
     id?: SortOrder
     rating?: SortOrder
@@ -13830,62 +14204,83 @@ export namespace Prisma {
     rating?: SortOrder
   }
 
+  export type EnumPlanFilter<$PrismaModel = never> = {
+    equals?: $Enums.Plan | EnumPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlanFilter<$PrismaModel> | $Enums.Plan
+  }
+
+  export type EnumSubscriptionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.SubscriptionStatus | EnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSubscriptionStatusFilter<$PrismaModel> | $Enums.SubscriptionStatus
+  }
+
   export type SubscriptionCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     plan?: SortOrder
+    status?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
-    status?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SubscriptionMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     plan?: SortOrder
+    status?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
-    status?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SubscriptionMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
     plan?: SortOrder
+    status?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
-    status?: SortOrder
-    updatedAt?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  export type EnumPlanWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Plan | EnumPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlanWithAggregatesFilter<$PrismaModel> | $Enums.Plan
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPlanFilter<$PrismaModel>
+    _max?: NestedEnumPlanFilter<$PrismaModel>
+  }
+
+  export type EnumSubscriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SubscriptionStatus | EnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.SubscriptionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSubscriptionStatusFilter<$PrismaModel>
+    _max?: NestedEnumSubscriptionStatusFilter<$PrismaModel>
+  }
+
+  export type EnumPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodFilter<$PrismaModel> | $Enums.PaymentMethod
   }
 
   export type SubscriptionNullableScalarRelationFilter = {
     is?: SubscriptionWhereInput | null
     isNot?: SubscriptionWhereInput | null
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type PaymentCountOrderByAggregateInput = {
@@ -13895,6 +14290,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     method?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type PaymentAvgOrderByAggregateInput = {
@@ -13908,6 +14304,7 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     method?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type PaymentMinOrderByAggregateInput = {
@@ -13917,28 +14314,21 @@ export namespace Prisma {
     amount?: SortOrder
     date?: SortOrder
     method?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type PaymentSumOrderByAggregateInput = {
     amount?: SortOrder
   }
 
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+  export type EnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
   }
 
   export type PlaylistCreateNestedManyWithoutUserInput = {
@@ -14201,6 +14591,12 @@ export namespace Prisma {
     deleteMany?: SongScalarWhereInput | SongScalarWhereInput[]
   }
 
+  export type ArtistCreateNestedOneWithoutAlbumsInput = {
+    create?: XOR<ArtistCreateWithoutAlbumsInput, ArtistUncheckedCreateWithoutAlbumsInput>
+    connectOrCreate?: ArtistCreateOrConnectWithoutAlbumsInput
+    connect?: ArtistWhereUniqueInput
+  }
+
   export type SongCreateNestedManyWithoutAlbumInput = {
     create?: XOR<SongCreateWithoutAlbumInput, SongUncheckedCreateWithoutAlbumInput> | SongCreateWithoutAlbumInput[] | SongUncheckedCreateWithoutAlbumInput[]
     connectOrCreate?: SongCreateOrConnectWithoutAlbumInput | SongCreateOrConnectWithoutAlbumInput[]
@@ -14208,17 +14604,19 @@ export namespace Prisma {
     connect?: SongWhereUniqueInput | SongWhereUniqueInput[]
   }
 
-  export type ArtistCreateNestedOneWithoutAlbumsInput = {
-    create?: XOR<ArtistCreateWithoutAlbumsInput, ArtistUncheckedCreateWithoutAlbumsInput>
-    connectOrCreate?: ArtistCreateOrConnectWithoutAlbumsInput
-    connect?: ArtistWhereUniqueInput
-  }
-
   export type SongUncheckedCreateNestedManyWithoutAlbumInput = {
     create?: XOR<SongCreateWithoutAlbumInput, SongUncheckedCreateWithoutAlbumInput> | SongCreateWithoutAlbumInput[] | SongUncheckedCreateWithoutAlbumInput[]
     connectOrCreate?: SongCreateOrConnectWithoutAlbumInput | SongCreateOrConnectWithoutAlbumInput[]
     createMany?: SongCreateManyAlbumInputEnvelope
     connect?: SongWhereUniqueInput | SongWhereUniqueInput[]
+  }
+
+  export type ArtistUpdateOneRequiredWithoutAlbumsNestedInput = {
+    create?: XOR<ArtistCreateWithoutAlbumsInput, ArtistUncheckedCreateWithoutAlbumsInput>
+    connectOrCreate?: ArtistCreateOrConnectWithoutAlbumsInput
+    upsert?: ArtistUpsertWithoutAlbumsInput
+    connect?: ArtistWhereUniqueInput
+    update?: XOR<XOR<ArtistUpdateToOneWithWhereWithoutAlbumsInput, ArtistUpdateWithoutAlbumsInput>, ArtistUncheckedUpdateWithoutAlbumsInput>
   }
 
   export type SongUpdateManyWithoutAlbumNestedInput = {
@@ -14233,14 +14631,6 @@ export namespace Prisma {
     update?: SongUpdateWithWhereUniqueWithoutAlbumInput | SongUpdateWithWhereUniqueWithoutAlbumInput[]
     updateMany?: SongUpdateManyWithWhereWithoutAlbumInput | SongUpdateManyWithWhereWithoutAlbumInput[]
     deleteMany?: SongScalarWhereInput | SongScalarWhereInput[]
-  }
-
-  export type ArtistUpdateOneRequiredWithoutAlbumsNestedInput = {
-    create?: XOR<ArtistCreateWithoutAlbumsInput, ArtistUncheckedCreateWithoutAlbumsInput>
-    connectOrCreate?: ArtistCreateOrConnectWithoutAlbumsInput
-    upsert?: ArtistUpsertWithoutAlbumsInput
-    connect?: ArtistWhereUniqueInput
-    update?: XOR<XOR<ArtistUpdateToOneWithWhereWithoutAlbumsInput, ArtistUpdateWithoutAlbumsInput>, ArtistUncheckedUpdateWithoutAlbumsInput>
   }
 
   export type SongUncheckedUpdateManyWithoutAlbumNestedInput = {
@@ -14303,6 +14693,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type ArtistUpdateOneRequiredWithoutSongsNestedInput = {
@@ -14377,9 +14771,9 @@ export namespace Prisma {
     deleteMany?: RatingScalarWhereInput | RatingScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutPlaylistInput = {
-    create?: XOR<UserCreateWithoutPlaylistInput, UserUncheckedCreateWithoutPlaylistInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPlaylistInput
+  export type UserCreateNestedOneWithoutPlaylistsInput = {
+    create?: XOR<UserCreateWithoutPlaylistsInput, UserUncheckedCreateWithoutPlaylistsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlaylistsInput
     connect?: UserWhereUniqueInput
   }
 
@@ -14397,12 +14791,16 @@ export namespace Prisma {
     connect?: PlaylistSongWhereUniqueInput | PlaylistSongWhereUniqueInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutPlaylistNestedInput = {
-    create?: XOR<UserCreateWithoutPlaylistInput, UserUncheckedCreateWithoutPlaylistInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPlaylistInput
-    upsert?: UserUpsertWithoutPlaylistInput
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type UserUpdateOneRequiredWithoutPlaylistsNestedInput = {
+    create?: XOR<UserCreateWithoutPlaylistsInput, UserUncheckedCreateWithoutPlaylistsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlaylistsInput
+    upsert?: UserUpsertWithoutPlaylistsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlaylistInput, UserUpdateWithoutPlaylistInput>, UserUncheckedUpdateWithoutPlaylistInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlaylistsInput, UserUpdateWithoutPlaylistsInput>, UserUncheckedUpdateWithoutPlaylistsInput>
   }
 
   export type PlaylistSongUpdateManyWithoutPlaylistNestedInput = {
@@ -14461,37 +14859,37 @@ export namespace Prisma {
     update?: XOR<XOR<SongUpdateToOneWithWhereWithoutPlaylistsInput, SongUpdateWithoutPlaylistsInput>, SongUncheckedUpdateWithoutPlaylistsInput>
   }
 
-  export type UserCreateNestedOneWithoutRatingInput = {
-    create?: XOR<UserCreateWithoutRatingInput, UserUncheckedCreateWithoutRatingInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRatingInput
+  export type UserCreateNestedOneWithoutRatingsInput = {
+    create?: XOR<UserCreateWithoutRatingsInput, UserUncheckedCreateWithoutRatingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRatingsInput
     connect?: UserWhereUniqueInput
   }
 
-  export type SongCreateNestedOneWithoutRatingInput = {
-    create?: XOR<SongCreateWithoutRatingInput, SongUncheckedCreateWithoutRatingInput>
-    connectOrCreate?: SongCreateOrConnectWithoutRatingInput
+  export type SongCreateNestedOneWithoutRatingsInput = {
+    create?: XOR<SongCreateWithoutRatingsInput, SongUncheckedCreateWithoutRatingsInput>
+    connectOrCreate?: SongCreateOrConnectWithoutRatingsInput
     connect?: SongWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutRatingNestedInput = {
-    create?: XOR<UserCreateWithoutRatingInput, UserUncheckedCreateWithoutRatingInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRatingInput
-    upsert?: UserUpsertWithoutRatingInput
+  export type UserUpdateOneRequiredWithoutRatingsNestedInput = {
+    create?: XOR<UserCreateWithoutRatingsInput, UserUncheckedCreateWithoutRatingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRatingsInput
+    upsert?: UserUpsertWithoutRatingsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRatingInput, UserUpdateWithoutRatingInput>, UserUncheckedUpdateWithoutRatingInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRatingsInput, UserUpdateWithoutRatingsInput>, UserUncheckedUpdateWithoutRatingsInput>
   }
 
-  export type SongUpdateOneRequiredWithoutRatingNestedInput = {
-    create?: XOR<SongCreateWithoutRatingInput, SongUncheckedCreateWithoutRatingInput>
-    connectOrCreate?: SongCreateOrConnectWithoutRatingInput
-    upsert?: SongUpsertWithoutRatingInput
+  export type SongUpdateOneRequiredWithoutRatingsNestedInput = {
+    create?: XOR<SongCreateWithoutRatingsInput, SongUncheckedCreateWithoutRatingsInput>
+    connectOrCreate?: SongCreateOrConnectWithoutRatingsInput
+    upsert?: SongUpsertWithoutRatingsInput
     connect?: SongWhereUniqueInput
-    update?: XOR<XOR<SongUpdateToOneWithWhereWithoutRatingInput, SongUpdateWithoutRatingInput>, SongUncheckedUpdateWithoutRatingInput>
+    update?: XOR<XOR<SongUpdateToOneWithWhereWithoutRatingsInput, SongUpdateWithoutRatingsInput>, SongUncheckedUpdateWithoutRatingsInput>
   }
 
-  export type UserCreateNestedOneWithoutSubscriptionInput = {
-    create?: XOR<UserCreateWithoutSubscriptionInput, UserUncheckedCreateWithoutSubscriptionInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSubscriptionInput
+  export type UserCreateNestedOneWithoutSubscriptionsInput = {
+    create?: XOR<UserCreateWithoutSubscriptionsInput, UserUncheckedCreateWithoutSubscriptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSubscriptionsInput
     connect?: UserWhereUniqueInput
   }
 
@@ -14509,12 +14907,20 @@ export namespace Prisma {
     connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutSubscriptionNestedInput = {
-    create?: XOR<UserCreateWithoutSubscriptionInput, UserUncheckedCreateWithoutSubscriptionInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSubscriptionInput
-    upsert?: UserUpsertWithoutSubscriptionInput
+  export type EnumPlanFieldUpdateOperationsInput = {
+    set?: $Enums.Plan
+  }
+
+  export type EnumSubscriptionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.SubscriptionStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutSubscriptionsNestedInput = {
+    create?: XOR<UserCreateWithoutSubscriptionsInput, UserUncheckedCreateWithoutSubscriptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSubscriptionsInput
+    upsert?: UserUpsertWithoutSubscriptionsInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSubscriptionInput, UserUpdateWithoutSubscriptionInput>, UserUncheckedUpdateWithoutSubscriptionInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSubscriptionsInput, UserUpdateWithoutSubscriptionsInput>, UserUncheckedUpdateWithoutSubscriptionsInput>
   }
 
   export type PaymentUpdateManyWithoutSubscriptionNestedInput = {
@@ -14545,38 +14951,38 @@ export namespace Prisma {
     deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutPaymentInput = {
-    create?: XOR<UserCreateWithoutPaymentInput, UserUncheckedCreateWithoutPaymentInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPaymentInput
+  export type UserCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPaymentsInput
     connect?: UserWhereUniqueInput
   }
 
-  export type SubscriptionCreateNestedOneWithoutPaymentInput = {
-    create?: XOR<SubscriptionCreateWithoutPaymentInput, SubscriptionUncheckedCreateWithoutPaymentInput>
-    connectOrCreate?: SubscriptionCreateOrConnectWithoutPaymentInput
+  export type SubscriptionCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<SubscriptionCreateWithoutPaymentsInput, SubscriptionUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: SubscriptionCreateOrConnectWithoutPaymentsInput
     connect?: SubscriptionWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutPaymentNestedInput = {
-    create?: XOR<UserCreateWithoutPaymentInput, UserUncheckedCreateWithoutPaymentInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPaymentInput
-    upsert?: UserUpsertWithoutPaymentInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPaymentInput, UserUpdateWithoutPaymentInput>, UserUncheckedUpdateWithoutPaymentInput>
+  export type EnumPaymentMethodFieldUpdateOperationsInput = {
+    set?: $Enums.PaymentMethod
   }
 
-  export type SubscriptionUpdateOneWithoutPaymentNestedInput = {
-    create?: XOR<SubscriptionCreateWithoutPaymentInput, SubscriptionUncheckedCreateWithoutPaymentInput>
-    connectOrCreate?: SubscriptionCreateOrConnectWithoutPaymentInput
-    upsert?: SubscriptionUpsertWithoutPaymentInput
+  export type UserUpdateOneRequiredWithoutPaymentsNestedInput = {
+    create?: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPaymentsInput
+    upsert?: UserUpsertWithoutPaymentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPaymentsInput, UserUpdateWithoutPaymentsInput>, UserUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type SubscriptionUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<SubscriptionCreateWithoutPaymentsInput, SubscriptionUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: SubscriptionCreateOrConnectWithoutPaymentsInput
+    upsert?: SubscriptionUpsertWithoutPaymentsInput
     disconnect?: SubscriptionWhereInput | boolean
     delete?: SubscriptionWhereInput | boolean
     connect?: SubscriptionWhereUniqueInput
-    update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutPaymentInput, SubscriptionUpdateWithoutPaymentInput>, SubscriptionUncheckedUpdateWithoutPaymentInput>
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
+    update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutPaymentsInput, SubscriptionUpdateWithoutPaymentsInput>, SubscriptionUncheckedUpdateWithoutPaymentsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -14646,6 +15052,11 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -14671,6 +15082,14 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
@@ -14715,12 +15134,65 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumPlanFilter<$PrismaModel = never> = {
+    equals?: $Enums.Plan | EnumPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlanFilter<$PrismaModel> | $Enums.Plan
+  }
+
+  export type NestedEnumSubscriptionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.SubscriptionStatus | EnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSubscriptionStatusFilter<$PrismaModel> | $Enums.SubscriptionStatus
+  }
+
+  export type NestedEnumPlanWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Plan | EnumPlanFieldRefInput<$PrismaModel>
+    in?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Plan[] | ListEnumPlanFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlanWithAggregatesFilter<$PrismaModel> | $Enums.Plan
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPlanFilter<$PrismaModel>
+    _max?: NestedEnumPlanFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SubscriptionStatus | EnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SubscriptionStatus[] | ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumSubscriptionStatusWithAggregatesFilter<$PrismaModel> | $Enums.SubscriptionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSubscriptionStatusFilter<$PrismaModel>
+    _max?: NestedEnumSubscriptionStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPaymentMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodFilter<$PrismaModel> | $Enums.PaymentMethod
+  }
+
+  export type NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PaymentMethod | EnumPaymentMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PaymentMethod[] | ListEnumPaymentMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel> | $Enums.PaymentMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPaymentMethodFilter<$PrismaModel>
+    _max?: NestedEnumPaymentMethodFilter<$PrismaModel>
+  }
+
   export type PlaylistCreateWithoutUserInput = {
     id?: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
     songs?: PlaylistSongCreateNestedManyWithoutPlaylistInput
   }
 
@@ -14728,8 +15200,10 @@ export namespace Prisma {
     id?: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
     songs?: PlaylistSongUncheckedCreateNestedManyWithoutPlaylistInput
   }
 
@@ -14746,7 +15220,7 @@ export namespace Prisma {
   export type RatingCreateWithoutUserInput = {
     id?: string
     rating: number
-    song: SongCreateNestedOneWithoutRatingInput
+    song: SongCreateNestedOneWithoutRatingsInput
   }
 
   export type RatingUncheckedCreateWithoutUserInput = {
@@ -14769,8 +15243,9 @@ export namespace Prisma {
     id?: string
     amount: number
     date: Date | string
-    method: string
-    subscription?: SubscriptionCreateNestedOneWithoutPaymentInput
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
+    subscription?: SubscriptionCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutUserInput = {
@@ -14778,7 +15253,8 @@ export namespace Prisma {
     subscriptionId?: string | null
     amount: number
     date: Date | string
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
   }
 
   export type PaymentCreateOrConnectWithoutUserInput = {
@@ -14793,24 +15269,24 @@ export namespace Prisma {
 
   export type SubscriptionCreateWithoutUserInput = {
     id?: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    payment?: PaymentCreateNestedManyWithoutSubscriptionInput
+    updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutSubscriptionInput
   }
 
   export type SubscriptionUncheckedCreateWithoutUserInput = {
     id?: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    payment?: PaymentUncheckedCreateNestedManyWithoutSubscriptionInput
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutSubscriptionInput
   }
 
   export type SubscriptionCreateOrConnectWithoutUserInput = {
@@ -14847,8 +15323,10 @@ export namespace Prisma {
     userId?: StringFilter<"Playlist"> | string
     title?: StringFilter<"Playlist"> | string
     description?: StringFilter<"Playlist"> | string
-    updatedAt?: DateTimeFilter<"Playlist"> | Date | string
+    isPublic?: BoolFilter<"Playlist"> | boolean
+    coverImg?: StringNullableFilter<"Playlist"> | string | null
     createdAt?: DateTimeFilter<"Playlist"> | Date | string
+    updatedAt?: DateTimeFilter<"Playlist"> | Date | string
   }
 
   export type RatingUpsertWithWhereUniqueWithoutUserInput = {
@@ -14902,7 +15380,8 @@ export namespace Prisma {
     subscriptionId?: StringNullableFilter<"Payment"> | string | null
     amount?: IntFilter<"Payment"> | number
     date?: DateTimeFilter<"Payment"> | Date | string
-    method?: StringFilter<"Payment"> | string
+    method?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
+    createdAt?: DateTimeFilter<"Payment"> | Date | string
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutUserInput = {
@@ -14927,12 +15406,12 @@ export namespace Prisma {
     NOT?: SubscriptionScalarWhereInput | SubscriptionScalarWhereInput[]
     id?: StringFilter<"Subscription"> | string
     userId?: StringFilter<"Subscription"> | string
-    plan?: StringFilter<"Subscription"> | string
+    plan?: EnumPlanFilter<"Subscription"> | $Enums.Plan
+    status?: EnumSubscriptionStatusFilter<"Subscription"> | $Enums.SubscriptionStatus
     startDate?: DateTimeFilter<"Subscription"> | Date | string
     endDate?: DateTimeFilter<"Subscription"> | Date | string
-    status?: StringFilter<"Subscription"> | string
-    updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
+    updatedAt?: DateTimeFilter<"Subscription"> | Date | string
   }
 
   export type AlbumCreateWithoutArtistInput = {
@@ -14941,8 +15420,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     songs?: SongCreateNestedManyWithoutAlbumInput
   }
 
@@ -14952,8 +15431,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     songs?: SongUncheckedCreateNestedManyWithoutAlbumInput
   }
 
@@ -14975,11 +15454,14 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     album: AlbumCreateNestedOneWithoutSongsInput
     playlists?: PlaylistSongCreateNestedManyWithoutSongInput
-    rating?: RatingCreateNestedManyWithoutSongInput
+    ratings?: RatingCreateNestedManyWithoutSongInput
   }
 
   export type SongUncheckedCreateWithoutArtistInput = {
@@ -14991,10 +15473,13 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     playlists?: PlaylistSongUncheckedCreateNestedManyWithoutSongInput
-    rating?: RatingUncheckedCreateNestedManyWithoutSongInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutSongInput
   }
 
   export type SongCreateOrConnectWithoutArtistInput = {
@@ -15033,8 +15518,8 @@ export namespace Prisma {
     genre?: StringFilter<"Album"> | string
     img?: StringFilter<"Album"> | string
     releaseDate?: DateTimeFilter<"Album"> | Date | string
-    updatedAt?: DateTimeFilter<"Album"> | Date | string
     createdAt?: DateTimeFilter<"Album"> | Date | string
+    updatedAt?: DateTimeFilter<"Album"> | Date | string
   }
 
   export type SongUpsertWithWhereUniqueWithoutArtistInput = {
@@ -15066,8 +15551,38 @@ export namespace Prisma {
     genre?: StringFilter<"Song"> | string
     songUrl?: StringFilter<"Song"> | string
     releaseDate?: DateTimeFilter<"Song"> | Date | string
-    updatedAt?: DateTimeFilter<"Song"> | Date | string
+    isExplicit?: BoolFilter<"Song"> | boolean
+    playCount?: IntFilter<"Song"> | number
+    likes?: IntFilter<"Song"> | number
     createdAt?: DateTimeFilter<"Song"> | Date | string
+    updatedAt?: DateTimeFilter<"Song"> | Date | string
+  }
+
+  export type ArtistCreateWithoutAlbumsInput = {
+    id?: string
+    name: string
+    genre: string
+    bio: string
+    img: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    songs?: SongCreateNestedManyWithoutArtistInput
+  }
+
+  export type ArtistUncheckedCreateWithoutAlbumsInput = {
+    id?: string
+    name: string
+    genre: string
+    bio: string
+    img: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    songs?: SongUncheckedCreateNestedManyWithoutArtistInput
+  }
+
+  export type ArtistCreateOrConnectWithoutAlbumsInput = {
+    where: ArtistWhereUniqueInput
+    create: XOR<ArtistCreateWithoutAlbumsInput, ArtistUncheckedCreateWithoutAlbumsInput>
   }
 
   export type SongCreateWithoutAlbumInput = {
@@ -15078,11 +15593,14 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     artist: ArtistCreateNestedOneWithoutSongsInput
     playlists?: PlaylistSongCreateNestedManyWithoutSongInput
-    rating?: RatingCreateNestedManyWithoutSongInput
+    ratings?: RatingCreateNestedManyWithoutSongInput
   }
 
   export type SongUncheckedCreateWithoutAlbumInput = {
@@ -15094,10 +15612,13 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     playlists?: PlaylistSongUncheckedCreateNestedManyWithoutSongInput
-    rating?: RatingUncheckedCreateNestedManyWithoutSongInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutSongInput
   }
 
   export type SongCreateOrConnectWithoutAlbumInput = {
@@ -15108,49 +15629,6 @@ export namespace Prisma {
   export type SongCreateManyAlbumInputEnvelope = {
     data: SongCreateManyAlbumInput | SongCreateManyAlbumInput[]
     skipDuplicates?: boolean
-  }
-
-  export type ArtistCreateWithoutAlbumsInput = {
-    id?: string
-    name: string
-    genre: string
-    bio: string
-    img: string
-    updatedAt?: Date | string
-    createdAt?: Date | string
-    songs?: SongCreateNestedManyWithoutArtistInput
-  }
-
-  export type ArtistUncheckedCreateWithoutAlbumsInput = {
-    id?: string
-    name: string
-    genre: string
-    bio: string
-    img: string
-    updatedAt?: Date | string
-    createdAt?: Date | string
-    songs?: SongUncheckedCreateNestedManyWithoutArtistInput
-  }
-
-  export type ArtistCreateOrConnectWithoutAlbumsInput = {
-    where: ArtistWhereUniqueInput
-    create: XOR<ArtistCreateWithoutAlbumsInput, ArtistUncheckedCreateWithoutAlbumsInput>
-  }
-
-  export type SongUpsertWithWhereUniqueWithoutAlbumInput = {
-    where: SongWhereUniqueInput
-    update: XOR<SongUpdateWithoutAlbumInput, SongUncheckedUpdateWithoutAlbumInput>
-    create: XOR<SongCreateWithoutAlbumInput, SongUncheckedCreateWithoutAlbumInput>
-  }
-
-  export type SongUpdateWithWhereUniqueWithoutAlbumInput = {
-    where: SongWhereUniqueInput
-    data: XOR<SongUpdateWithoutAlbumInput, SongUncheckedUpdateWithoutAlbumInput>
-  }
-
-  export type SongUpdateManyWithWhereWithoutAlbumInput = {
-    where: SongScalarWhereInput
-    data: XOR<SongUpdateManyMutationInput, SongUncheckedUpdateManyWithoutAlbumInput>
   }
 
   export type ArtistUpsertWithoutAlbumsInput = {
@@ -15170,8 +15648,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: SongUpdateManyWithoutArtistNestedInput
   }
 
@@ -15181,9 +15659,25 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: SongUncheckedUpdateManyWithoutArtistNestedInput
+  }
+
+  export type SongUpsertWithWhereUniqueWithoutAlbumInput = {
+    where: SongWhereUniqueInput
+    update: XOR<SongUpdateWithoutAlbumInput, SongUncheckedUpdateWithoutAlbumInput>
+    create: XOR<SongCreateWithoutAlbumInput, SongUncheckedCreateWithoutAlbumInput>
+  }
+
+  export type SongUpdateWithWhereUniqueWithoutAlbumInput = {
+    where: SongWhereUniqueInput
+    data: XOR<SongUpdateWithoutAlbumInput, SongUncheckedUpdateWithoutAlbumInput>
+  }
+
+  export type SongUpdateManyWithWhereWithoutAlbumInput = {
+    where: SongScalarWhereInput
+    data: XOR<SongUpdateManyMutationInput, SongUncheckedUpdateManyWithoutAlbumInput>
   }
 
   export type ArtistCreateWithoutSongsInput = {
@@ -15192,8 +15686,8 @@ export namespace Prisma {
     genre: string
     bio: string
     img: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     albums?: AlbumCreateNestedManyWithoutArtistInput
   }
 
@@ -15203,8 +15697,8 @@ export namespace Prisma {
     genre: string
     bio: string
     img: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     albums?: AlbumUncheckedCreateNestedManyWithoutArtistInput
   }
 
@@ -15219,8 +15713,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
     artist: ArtistCreateNestedOneWithoutAlbumsInput
   }
 
@@ -15231,8 +15725,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AlbumCreateOrConnectWithoutSongsInput = {
@@ -15263,7 +15757,7 @@ export namespace Prisma {
   export type RatingCreateWithoutSongInput = {
     id?: string
     rating: number
-    user: UserCreateNestedOneWithoutRatingInput
+    user: UserCreateNestedOneWithoutRatingsInput
   }
 
   export type RatingUncheckedCreateWithoutSongInput = {
@@ -15299,8 +15793,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     albums?: AlbumUpdateManyWithoutArtistNestedInput
   }
 
@@ -15310,8 +15804,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     bio?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     albums?: AlbumUncheckedUpdateManyWithoutArtistNestedInput
   }
 
@@ -15332,8 +15826,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artist?: ArtistUpdateOneRequiredWithoutAlbumsNestedInput
   }
 
@@ -15344,8 +15838,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlaylistSongUpsertWithWhereUniqueWithoutSongInput = {
@@ -15389,33 +15883,33 @@ export namespace Prisma {
     data: XOR<RatingUpdateManyMutationInput, RatingUncheckedUpdateManyWithoutSongInput>
   }
 
-  export type UserCreateWithoutPlaylistInput = {
+  export type UserCreateWithoutPlaylistsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    rating?: RatingCreateNestedManyWithoutUserInput
-    payment?: PaymentCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    ratings?: RatingCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutPlaylistInput = {
+  export type UserUncheckedCreateWithoutPlaylistsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    rating?: RatingUncheckedCreateNestedManyWithoutUserInput
-    payment?: PaymentUncheckedCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    ratings?: RatingUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutPlaylistInput = {
+  export type UserCreateOrConnectWithoutPlaylistsInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutPlaylistInput, UserUncheckedCreateWithoutPlaylistInput>
+    create: XOR<UserCreateWithoutPlaylistsInput, UserUncheckedCreateWithoutPlaylistsInput>
   }
 
   export type PlaylistSongCreateWithoutPlaylistInput = {
@@ -15438,39 +15932,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithoutPlaylistInput = {
-    update: XOR<UserUpdateWithoutPlaylistInput, UserUncheckedUpdateWithoutPlaylistInput>
-    create: XOR<UserCreateWithoutPlaylistInput, UserUncheckedCreateWithoutPlaylistInput>
+  export type UserUpsertWithoutPlaylistsInput = {
+    update: XOR<UserUpdateWithoutPlaylistsInput, UserUncheckedUpdateWithoutPlaylistsInput>
+    create: XOR<UserCreateWithoutPlaylistsInput, UserUncheckedCreateWithoutPlaylistsInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutPlaylistInput = {
+  export type UserUpdateToOneWithWhereWithoutPlaylistsInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutPlaylistInput, UserUncheckedUpdateWithoutPlaylistInput>
+    data: XOR<UserUpdateWithoutPlaylistsInput, UserUncheckedUpdateWithoutPlaylistsInput>
   }
 
-  export type UserUpdateWithoutPlaylistInput = {
+  export type UserUpdateWithoutPlaylistsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rating?: RatingUpdateManyWithoutUserNestedInput
-    payment?: PaymentUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ratings?: RatingUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutPlaylistInput = {
+  export type UserUncheckedUpdateWithoutPlaylistsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rating?: RatingUncheckedUpdateManyWithoutUserNestedInput
-    payment?: PaymentUncheckedUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ratings?: RatingUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PlaylistSongUpsertWithWhereUniqueWithoutPlaylistInput = {
@@ -15493,9 +15987,11 @@ export namespace Prisma {
     id?: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutPlaylistInput
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutPlaylistsInput
   }
 
   export type PlaylistUncheckedCreateWithoutSongsInput = {
@@ -15503,8 +15999,10 @@ export namespace Prisma {
     userId: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type PlaylistCreateOrConnectWithoutSongsInput = {
@@ -15520,11 +16018,14 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     artist: ArtistCreateNestedOneWithoutSongsInput
     album: AlbumCreateNestedOneWithoutSongsInput
-    rating?: RatingCreateNestedManyWithoutSongInput
+    ratings?: RatingCreateNestedManyWithoutSongInput
   }
 
   export type SongUncheckedCreateWithoutPlaylistsInput = {
@@ -15537,9 +16038,12 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
-    rating?: RatingUncheckedCreateNestedManyWithoutSongInput
+    updatedAt?: Date | string
+    ratings?: RatingUncheckedCreateNestedManyWithoutSongInput
   }
 
   export type SongCreateOrConnectWithoutPlaylistsInput = {
@@ -15562,9 +16066,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutPlaylistNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPlaylistsNestedInput
   }
 
   export type PlaylistUncheckedUpdateWithoutSongsInput = {
@@ -15572,8 +16078,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SongUpsertWithoutPlaylistsInput = {
@@ -15595,11 +16103,14 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artist?: ArtistUpdateOneRequiredWithoutSongsNestedInput
     album?: AlbumUpdateOneRequiredWithoutSongsNestedInput
-    rating?: RatingUpdateManyWithoutSongNestedInput
+    ratings?: RatingUpdateManyWithoutSongNestedInput
   }
 
   export type SongUncheckedUpdateWithoutPlaylistsInput = {
@@ -15612,41 +16123,44 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    rating?: RatingUncheckedUpdateManyWithoutSongNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ratings?: RatingUncheckedUpdateManyWithoutSongNestedInput
   }
 
-  export type UserCreateWithoutRatingInput = {
+  export type UserCreateWithoutRatingsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistCreateNestedManyWithoutUserInput
-    payment?: PaymentCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutRatingInput = {
+  export type UserUncheckedCreateWithoutRatingsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistUncheckedCreateNestedManyWithoutUserInput
-    payment?: PaymentUncheckedCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutRatingInput = {
+  export type UserCreateOrConnectWithoutRatingsInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutRatingInput, UserUncheckedCreateWithoutRatingInput>
+    create: XOR<UserCreateWithoutRatingsInput, UserUncheckedCreateWithoutRatingsInput>
   }
 
-  export type SongCreateWithoutRatingInput = {
+  export type SongCreateWithoutRatingsInput = {
     id?: string
     title: string
     duration: number
@@ -15654,14 +16168,17 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     artist: ArtistCreateNestedOneWithoutSongsInput
     album: AlbumCreateNestedOneWithoutSongsInput
     playlists?: PlaylistSongCreateNestedManyWithoutSongInput
   }
 
-  export type SongUncheckedCreateWithoutRatingInput = {
+  export type SongUncheckedCreateWithoutRatingsInput = {
     id?: string
     artistId: string
     albumId: string
@@ -15671,63 +16188,66 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
     playlists?: PlaylistSongUncheckedCreateNestedManyWithoutSongInput
   }
 
-  export type SongCreateOrConnectWithoutRatingInput = {
+  export type SongCreateOrConnectWithoutRatingsInput = {
     where: SongWhereUniqueInput
-    create: XOR<SongCreateWithoutRatingInput, SongUncheckedCreateWithoutRatingInput>
+    create: XOR<SongCreateWithoutRatingsInput, SongUncheckedCreateWithoutRatingsInput>
   }
 
-  export type UserUpsertWithoutRatingInput = {
-    update: XOR<UserUpdateWithoutRatingInput, UserUncheckedUpdateWithoutRatingInput>
-    create: XOR<UserCreateWithoutRatingInput, UserUncheckedCreateWithoutRatingInput>
+  export type UserUpsertWithoutRatingsInput = {
+    update: XOR<UserUpdateWithoutRatingsInput, UserUncheckedUpdateWithoutRatingsInput>
+    create: XOR<UserCreateWithoutRatingsInput, UserUncheckedCreateWithoutRatingsInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutRatingInput = {
+  export type UserUpdateToOneWithWhereWithoutRatingsInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutRatingInput, UserUncheckedUpdateWithoutRatingInput>
+    data: XOR<UserUpdateWithoutRatingsInput, UserUncheckedUpdateWithoutRatingsInput>
   }
 
-  export type UserUpdateWithoutRatingInput = {
+  export type UserUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUpdateManyWithoutUserNestedInput
-    payment?: PaymentUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutRatingInput = {
+  export type UserUncheckedUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
-    payment?: PaymentUncheckedUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type SongUpsertWithoutRatingInput = {
-    update: XOR<SongUpdateWithoutRatingInput, SongUncheckedUpdateWithoutRatingInput>
-    create: XOR<SongCreateWithoutRatingInput, SongUncheckedCreateWithoutRatingInput>
+  export type SongUpsertWithoutRatingsInput = {
+    update: XOR<SongUpdateWithoutRatingsInput, SongUncheckedUpdateWithoutRatingsInput>
+    create: XOR<SongCreateWithoutRatingsInput, SongUncheckedCreateWithoutRatingsInput>
     where?: SongWhereInput
   }
 
-  export type SongUpdateToOneWithWhereWithoutRatingInput = {
+  export type SongUpdateToOneWithWhereWithoutRatingsInput = {
     where?: SongWhereInput
-    data: XOR<SongUpdateWithoutRatingInput, SongUncheckedUpdateWithoutRatingInput>
+    data: XOR<SongUpdateWithoutRatingsInput, SongUncheckedUpdateWithoutRatingsInput>
   }
 
-  export type SongUpdateWithoutRatingInput = {
+  export type SongUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     duration?: IntFieldUpdateOperationsInput | number
@@ -15735,14 +16255,17 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artist?: ArtistUpdateOneRequiredWithoutSongsNestedInput
     album?: AlbumUpdateOneRequiredWithoutSongsNestedInput
     playlists?: PlaylistSongUpdateManyWithoutSongNestedInput
   }
 
-  export type SongUncheckedUpdateWithoutRatingInput = {
+  export type SongUncheckedUpdateWithoutRatingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     artistId?: StringFieldUpdateOperationsInput | string
     albumId?: StringFieldUpdateOperationsInput | string
@@ -15752,46 +16275,50 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playlists?: PlaylistSongUncheckedUpdateManyWithoutSongNestedInput
   }
 
-  export type UserCreateWithoutSubscriptionInput = {
+  export type UserCreateWithoutSubscriptionsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistCreateNestedManyWithoutUserInput
-    rating?: RatingCreateNestedManyWithoutUserInput
-    payment?: PaymentCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistCreateNestedManyWithoutUserInput
+    ratings?: RatingCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutSubscriptionInput = {
+  export type UserUncheckedCreateWithoutSubscriptionsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistUncheckedCreateNestedManyWithoutUserInput
-    rating?: RatingUncheckedCreateNestedManyWithoutUserInput
-    payment?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistUncheckedCreateNestedManyWithoutUserInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutSubscriptionInput = {
+  export type UserCreateOrConnectWithoutSubscriptionsInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutSubscriptionInput, UserUncheckedCreateWithoutSubscriptionInput>
+    create: XOR<UserCreateWithoutSubscriptionsInput, UserUncheckedCreateWithoutSubscriptionsInput>
   }
 
   export type PaymentCreateWithoutSubscriptionInput = {
     id?: string
     amount: number
     date: Date | string
-    method: string
-    user: UserCreateNestedOneWithoutPaymentInput
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutSubscriptionInput = {
@@ -15799,7 +16326,8 @@ export namespace Prisma {
     userId: string
     amount: number
     date: Date | string
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
   }
 
   export type PaymentCreateOrConnectWithoutSubscriptionInput = {
@@ -15812,39 +16340,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithoutSubscriptionInput = {
-    update: XOR<UserUpdateWithoutSubscriptionInput, UserUncheckedUpdateWithoutSubscriptionInput>
-    create: XOR<UserCreateWithoutSubscriptionInput, UserUncheckedCreateWithoutSubscriptionInput>
+  export type UserUpsertWithoutSubscriptionsInput = {
+    update: XOR<UserUpdateWithoutSubscriptionsInput, UserUncheckedUpdateWithoutSubscriptionsInput>
+    create: XOR<UserCreateWithoutSubscriptionsInput, UserUncheckedCreateWithoutSubscriptionsInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutSubscriptionInput = {
+  export type UserUpdateToOneWithWhereWithoutSubscriptionsInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutSubscriptionInput, UserUncheckedUpdateWithoutSubscriptionInput>
+    data: XOR<UserUpdateWithoutSubscriptionsInput, UserUncheckedUpdateWithoutSubscriptionsInput>
   }
 
-  export type UserUpdateWithoutSubscriptionInput = {
+  export type UserUpdateWithoutSubscriptionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUpdateManyWithoutUserNestedInput
-    rating?: RatingUpdateManyWithoutUserNestedInput
-    payment?: PaymentUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUpdateManyWithoutUserNestedInput
+    ratings?: RatingUpdateManyWithoutUserNestedInput
+    payments?: PaymentUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutSubscriptionInput = {
+  export type UserUncheckedUpdateWithoutSubscriptionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
-    rating?: RatingUncheckedUpdateManyWithoutUserNestedInput
-    payment?: PaymentUncheckedUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutUserNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PaymentUpsertWithWhereUniqueWithoutSubscriptionInput = {
@@ -15863,136 +16391,138 @@ export namespace Prisma {
     data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutSubscriptionInput>
   }
 
-  export type UserCreateWithoutPaymentInput = {
+  export type UserCreateWithoutPaymentsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistCreateNestedManyWithoutUserInput
-    rating?: RatingCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistCreateNestedManyWithoutUserInput
+    ratings?: RatingCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutPaymentInput = {
+  export type UserUncheckedCreateWithoutPaymentsInput = {
     id?: string
     username: string
     email: string
     password: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    playlist?: PlaylistUncheckedCreateNestedManyWithoutUserInput
-    rating?: RatingUncheckedCreateNestedManyWithoutUserInput
-    subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    updatedAt?: Date | string
+    playlists?: PlaylistUncheckedCreateNestedManyWithoutUserInput
+    ratings?: RatingUncheckedCreateNestedManyWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutPaymentInput = {
+  export type UserCreateOrConnectWithoutPaymentsInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutPaymentInput, UserUncheckedCreateWithoutPaymentInput>
+    create: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
   }
 
-  export type SubscriptionCreateWithoutPaymentInput = {
+  export type SubscriptionCreateWithoutPaymentsInput = {
     id?: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
-    user: UserCreateNestedOneWithoutSubscriptionInput
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutSubscriptionsInput
   }
 
-  export type SubscriptionUncheckedCreateWithoutPaymentInput = {
+  export type SubscriptionUncheckedCreateWithoutPaymentsInput = {
     id?: string
     userId: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
-  export type SubscriptionCreateOrConnectWithoutPaymentInput = {
+  export type SubscriptionCreateOrConnectWithoutPaymentsInput = {
     where: SubscriptionWhereUniqueInput
-    create: XOR<SubscriptionCreateWithoutPaymentInput, SubscriptionUncheckedCreateWithoutPaymentInput>
+    create: XOR<SubscriptionCreateWithoutPaymentsInput, SubscriptionUncheckedCreateWithoutPaymentsInput>
   }
 
-  export type UserUpsertWithoutPaymentInput = {
-    update: XOR<UserUpdateWithoutPaymentInput, UserUncheckedUpdateWithoutPaymentInput>
-    create: XOR<UserCreateWithoutPaymentInput, UserUncheckedCreateWithoutPaymentInput>
+  export type UserUpsertWithoutPaymentsInput = {
+    update: XOR<UserUpdateWithoutPaymentsInput, UserUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutPaymentInput = {
+  export type UserUpdateToOneWithWhereWithoutPaymentsInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutPaymentInput, UserUncheckedUpdateWithoutPaymentInput>
+    data: XOR<UserUpdateWithoutPaymentsInput, UserUncheckedUpdateWithoutPaymentsInput>
   }
 
-  export type UserUpdateWithoutPaymentInput = {
+  export type UserUpdateWithoutPaymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUpdateManyWithoutUserNestedInput
-    rating?: RatingUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUpdateManyWithoutUserNestedInput
+    ratings?: RatingUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutPaymentInput = {
+  export type UserUncheckedUpdateWithoutPaymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    playlist?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
-    rating?: RatingUncheckedUpdateManyWithoutUserNestedInput
-    subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playlists?: PlaylistUncheckedUpdateManyWithoutUserNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type SubscriptionUpsertWithoutPaymentInput = {
-    update: XOR<SubscriptionUpdateWithoutPaymentInput, SubscriptionUncheckedUpdateWithoutPaymentInput>
-    create: XOR<SubscriptionCreateWithoutPaymentInput, SubscriptionUncheckedCreateWithoutPaymentInput>
+  export type SubscriptionUpsertWithoutPaymentsInput = {
+    update: XOR<SubscriptionUpdateWithoutPaymentsInput, SubscriptionUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<SubscriptionCreateWithoutPaymentsInput, SubscriptionUncheckedCreateWithoutPaymentsInput>
     where?: SubscriptionWhereInput
   }
 
-  export type SubscriptionUpdateToOneWithWhereWithoutPaymentInput = {
+  export type SubscriptionUpdateToOneWithWhereWithoutPaymentsInput = {
     where?: SubscriptionWhereInput
-    data: XOR<SubscriptionUpdateWithoutPaymentInput, SubscriptionUncheckedUpdateWithoutPaymentInput>
+    data: XOR<SubscriptionUpdateWithoutPaymentsInput, SubscriptionUncheckedUpdateWithoutPaymentsInput>
   }
 
-  export type SubscriptionUpdateWithoutPaymentInput = {
+  export type SubscriptionUpdateWithoutPaymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutSubscriptionNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutSubscriptionsNestedInput
   }
 
-  export type SubscriptionUncheckedUpdateWithoutPaymentInput = {
+  export type SubscriptionUncheckedUpdateWithoutPaymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlaylistCreateManyUserInput = {
     id?: string
     title: string
     description: string
-    updatedAt?: Date | string
+    isPublic?: boolean
+    coverImg?: string | null
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type RatingCreateManyUserInput = {
@@ -16006,25 +16536,28 @@ export namespace Prisma {
     subscriptionId?: string | null
     amount: number
     date: Date | string
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
   }
 
   export type SubscriptionCreateManyUserInput = {
     id?: string
-    plan: string
+    plan: $Enums.Plan
+    status: $Enums.SubscriptionStatus
     startDate: Date | string
     endDate: Date | string
-    status: string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type PlaylistUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: PlaylistSongUpdateManyWithoutPlaylistNestedInput
   }
 
@@ -16032,8 +16565,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: PlaylistSongUncheckedUpdateManyWithoutPlaylistNestedInput
   }
 
@@ -16041,14 +16576,16 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    coverImg?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RatingUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     rating?: IntFieldUpdateOperationsInput | number
-    song?: SongUpdateOneRequiredWithoutRatingNestedInput
+    song?: SongUpdateOneRequiredWithoutRatingsNestedInput
   }
 
   export type RatingUncheckedUpdateWithoutUserInput = {
@@ -16067,8 +16604,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
-    subscription?: SubscriptionUpdateOneWithoutPaymentNestedInput
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscription?: SubscriptionUpdateOneWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutUserInput = {
@@ -16076,7 +16614,8 @@ export namespace Prisma {
     subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentUncheckedUpdateManyWithoutUserInput = {
@@ -16084,39 +16623,40 @@ export namespace Prisma {
     subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SubscriptionUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    payment?: PaymentUpdateManyWithoutSubscriptionNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    payment?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
   export type SubscriptionUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    status?: EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
     startDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AlbumCreateManyArtistInput = {
@@ -16125,8 +16665,8 @@ export namespace Prisma {
     genre: string
     img: string
     releaseDate: Date | string
-    updatedAt?: Date | string
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type SongCreateManyArtistInput = {
@@ -16138,8 +16678,11 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AlbumUpdateWithoutArtistInput = {
@@ -16148,8 +16691,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: SongUpdateManyWithoutAlbumNestedInput
   }
 
@@ -16159,8 +16702,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     songs?: SongUncheckedUpdateManyWithoutAlbumNestedInput
   }
 
@@ -16170,8 +16713,8 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     img?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SongUpdateWithoutArtistInput = {
@@ -16182,11 +16725,14 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     album?: AlbumUpdateOneRequiredWithoutSongsNestedInput
     playlists?: PlaylistSongUpdateManyWithoutSongNestedInput
-    rating?: RatingUpdateManyWithoutSongNestedInput
+    ratings?: RatingUpdateManyWithoutSongNestedInput
   }
 
   export type SongUncheckedUpdateWithoutArtistInput = {
@@ -16198,10 +16744,13 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playlists?: PlaylistSongUncheckedUpdateManyWithoutSongNestedInput
-    rating?: RatingUncheckedUpdateManyWithoutSongNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutSongNestedInput
   }
 
   export type SongUncheckedUpdateManyWithoutArtistInput = {
@@ -16213,8 +16762,11 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SongCreateManyAlbumInput = {
@@ -16226,8 +16778,11 @@ export namespace Prisma {
     genre: string
     songUrl: string
     releaseDate: Date | string
-    updatedAt?: Date | string
+    isExplicit?: boolean
+    playCount?: number
+    likes?: number
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type SongUpdateWithoutAlbumInput = {
@@ -16238,11 +16793,14 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artist?: ArtistUpdateOneRequiredWithoutSongsNestedInput
     playlists?: PlaylistSongUpdateManyWithoutSongNestedInput
-    rating?: RatingUpdateManyWithoutSongNestedInput
+    ratings?: RatingUpdateManyWithoutSongNestedInput
   }
 
   export type SongUncheckedUpdateWithoutAlbumInput = {
@@ -16254,10 +16812,13 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playlists?: PlaylistSongUncheckedUpdateManyWithoutSongNestedInput
-    rating?: RatingUncheckedUpdateManyWithoutSongNestedInput
+    ratings?: RatingUncheckedUpdateManyWithoutSongNestedInput
   }
 
   export type SongUncheckedUpdateManyWithoutAlbumInput = {
@@ -16269,8 +16830,11 @@ export namespace Prisma {
     genre?: StringFieldUpdateOperationsInput | string
     songUrl?: StringFieldUpdateOperationsInput | string
     releaseDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isExplicit?: BoolFieldUpdateOperationsInput | boolean
+    playCount?: IntFieldUpdateOperationsInput | number
+    likes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PlaylistSongCreateManySongInput = {
@@ -16302,7 +16866,7 @@ export namespace Prisma {
   export type RatingUpdateWithoutSongInput = {
     id?: StringFieldUpdateOperationsInput | string
     rating?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutRatingNestedInput
+    user?: UserUpdateOneRequiredWithoutRatingsNestedInput
   }
 
   export type RatingUncheckedUpdateWithoutSongInput = {
@@ -16342,15 +16906,17 @@ export namespace Prisma {
     userId: string
     amount: number
     date: Date | string
-    method: string
+    method: $Enums.PaymentMethod
+    createdAt?: Date | string
   }
 
   export type PaymentUpdateWithoutSubscriptionInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
-    user?: UserUpdateOneRequiredWithoutPaymentNestedInput
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutSubscriptionInput = {
@@ -16358,7 +16924,8 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentUncheckedUpdateManyWithoutSubscriptionInput = {
@@ -16366,7 +16933,8 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    method?: StringFieldUpdateOperationsInput | string
+    method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
