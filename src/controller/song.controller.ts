@@ -13,7 +13,22 @@ type IMulterFiles = {
 ========================= */
 const getAllSong = async (req: Request, resp: Response): Promise<void> => {
   try {
-    const songs = await prisma.song.findMany();
+    const songs = await prisma.song.findMany({
+      select: {
+        id: true,
+        artistId: true,
+        albumId: true,
+        title: true,
+        duration: true,
+        img: true,
+        genre: true,
+        songUrl: true,
+        releaseDate: true,
+        isExplicit: true,
+        playCount: true,
+        likes: true,
+      },
+    });
 
     if (songs.length === 0) {
       resp.status(404).json({
@@ -94,7 +109,7 @@ const createSong = async (req: Request, resp: Response): Promise<void> => {
     // Upload image
     const { data: imageUpload, error: imageError } = await supabase.storage
       .from("music-store")
-      .upload(`images/song/${imageName}`, imageBase64, {
+      .upload(`images/song/${artistId}/${albumId}/${imageName}`, imageBase64, {
         contentType: imageFile.mimetype,
         cacheControl: "3600",
         upsert: false,
@@ -103,7 +118,7 @@ const createSong = async (req: Request, resp: Response): Promise<void> => {
     // Upload song
     const { data: songUpload, error: songError } = await supabase.storage
       .from("music-store")
-      .upload(`audio/${songName}`, songBase64, {
+      .upload(`audio/${artistId}/${albumId}/${songName}`, songBase64, {
         contentType: songFile.mimetype,
         cacheControl: "3600",
         upsert: false,

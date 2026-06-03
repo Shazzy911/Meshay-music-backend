@@ -1,5 +1,5 @@
-import { Request, Response } from "../types/file.type";
-import { decode } from "base64-arraybuffer";
+import { Request, Response } from "express";
+// import { decode } from "base64-arraybuffer";
 import prisma from "../lib/prisma";
 import { IFile } from "../types/file.type";
 import supabase from "../lib/supabaseClient";
@@ -59,13 +59,14 @@ const createArtist = async (req: Request, resp: Response): Promise<void> => {
       return;
     }
 
-    const fileBase64 = decode(file.buffer.toString("base64"));
+    // const fileBase64 = decode(file.buffer.toString("base64"));
+    const fileBuffer = file.buffer;
 
     const fileName = `${Date.now()}-${file.originalname}`;
 
     const { data: storageData, error: storageError } = await supabase.storage
       .from("music-store")
-      .upload(`images/artist/${fileName}`, fileBase64, {
+      .upload(`images/artist/${name}/${fileName}`, fileBuffer, {
         contentType: file.mimetype,
         cacheControl: "3600",
         upsert: false,
@@ -129,9 +130,52 @@ const getArtistById = async (req: Request, resp: Response): Promise<void> => {
       });
       return;
     }
-
     const artist = await prisma.artist.findUnique({
-      where: { id: artistId },
+      where: {
+        id: artistId,
+      },
+
+      select: {
+        id: true,
+        name: true,
+        genre: true,
+        bio: true,
+        img: true,
+
+        songs: {
+          select: {
+            id: true,
+            title: true,
+            duration: true,
+            img: true,
+            genre: true,
+            songUrl: true,
+            releaseDate: true,
+            isExplicit: true,
+            playCount: true,
+            likes: true,
+
+            // ✅ THIS IS THE KEY FIX
+            album: {
+              select: {
+                id: true,
+                title: true,
+                img: true,
+              },
+            },
+          },
+
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+
+        _count: {
+          select: {
+            songs: true,
+          },
+        },
+      },
     });
 
     if (!artist) {

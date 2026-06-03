@@ -6,7 +6,16 @@ import { decode } from "base64-arraybuffer";
 
 const getAllAlbum = async (req: Request, resp: Response): Promise<void> => {
   try {
-    const albums = await prisma.album.findMany();
+    const albums = await prisma.album.findMany({
+      include: {
+        artist: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
 
     if (albums.length === 0) {
       resp.status(404).json({
@@ -135,10 +144,49 @@ const getAlbumById = async (req: Request, resp: Response): Promise<void> => {
       return;
     }
 
-    // Find album
     const album = await prisma.album.findUnique({
       where: {
         id: albumId,
+      },
+
+      select: {
+        id: true,
+        title: true,
+        genre: true,
+        img: true,
+        releaseDate: true,
+
+        artist: {
+          select: {
+            id: true,
+            name: true,
+            img: true,
+          },
+        },
+
+        songs: {
+          select: {
+            id: true,
+            title: true,
+            duration: true,
+            img: true,
+            genre: true,
+            songUrl: true,
+            releaseDate: true,
+            isExplicit: true,
+            playCount: true,
+          },
+
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+
+        _count: {
+          select: {
+            songs: true,
+          },
+        },
       },
     });
 
