@@ -2,12 +2,12 @@
   "name": "music-app-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
-  "scripts": {
-    "start": "nodemon ./src/index.ts",
-    "build": "tsc",
-    "dev": "nodemon"
-  },
+  "main": "server.ts",
+ "scripts": {
+  "dev": "nodemon ./src/server.ts",
+  "build": "tsc",
+  "start": "node dist/server.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

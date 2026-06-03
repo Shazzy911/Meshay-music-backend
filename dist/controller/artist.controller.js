@@ -4,166 +4,271 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteArtistById = exports.updateArtistById = exports.getArtistById = exports.createArtist = exports.getAllArtist = void 0;
-const base64_arraybuffer_1 = require("base64-arraybuffer");
-const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
+// import { decode } from "base64-arraybuffer";
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const supabaseClient_1 = __importDefault(require("../lib/supabaseClient"));
+/* =========================
+   GET ALL ARTISTS
+========================= */
 const getAllArtist = async (req, resp) => {
     try {
-        let artist = await prisma_config_1.default.artist.findMany({
-            include: {
-                songs: true,
-                albums: {
-                    select: {
-                        title: true,
-                        genre: true,
-                    },
-                },
-            },
-        });
-        if (!artist || artist.length === 0) {
-            resp.status(404).json({ message: "Artist not Found" });
+        const artists = await prisma_1.default.artist.findMany();
+        if (artists.length === 0) {
+            resp.status(404).json({
+                success: false,
+                data: [],
+                message: "No artists found",
+            });
+            return;
         }
-        resp.status(200).json(artist);
+        resp.status(200).json({
+            success: true,
+            data: artists,
+            message: "Artists fetched successfully",
+        });
     }
     catch (error) {
-        resp.status(500).json({ error });
+        resp.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
     }
 };
 exports.getAllArtist = getAllArtist;
+/* =========================
+   CREATE ARTIST
+========================= */
 const createArtist = async (req, resp) => {
-    // {file: File},
     try {
         const { name, genre, bio } = req.body;
         if (!name || !genre || !bio) {
-            resp.status(404).json({ message: "All fields are required" });
+            resp.status(400).json({
+                success: false,
+                message: "All fields are required",
+            });
+            return;
         }
         const file = req.file;
         if (!file) {
-            resp.status(400).json({ message: "File is missing... not uploaded" });
+            resp.status(400).json({
+                success: false,
+                message: "Image file is required",
+            });
+            return;
         }
-        // decode file buffer to base64
-        const fileBase64 = (0, base64_arraybuffer_1.decode)(file.buffer.toString("base64"));
-        // upload the file to supabase
+        // const fileBase64 = decode(file.buffer.toString("base64"));
+        const fileBuffer = file.buffer;
+        const fileName = `${Date.now()}-${file.originalname}`;
         const { data: storageData, error: storageError } = await supabaseClient_1.default.storage
             .from("music-store")
-            .upload("images/artist/" + file.originalname, fileBase64, {
+            .upload(`images/artist/${name}/${fileName}`, fileBuffer, {
             contentType: file.mimetype,
             cacheControl: "3600",
             upsert: false,
         });
-        // Handle storage upload errors
         if (storageError) {
             resp.status(500).json({
+                success: false,
                 message: "Error uploading image to Supabase",
                 error: storageError.message,
             });
+            return;
         }
-        // get public url of the uploaded file
-        // Check if storageData is not null
-        if (storageData !== null) {
-            const imageData = supabaseClient_1.default.storage
-                .from("music-store")
-                .getPublicUrl(storageData.path);
-            const artistData = await prisma_config_1.default.artist.create({
-                data: {
-                    name,
-                    genre,
-                    bio,
-                    img: imageData?.data?.publicUrl || "", // Use the public URL for the image,
-                },
-            });
-            resp.status(201).json({
-                success: true,
-                result: artistData,
-                message: "Artist Information Saved Successfully",
-            });
-        }
-        else {
-            // Handle the case where storageData is null
+        if (!storageData) {
             resp.status(500).json({
-                message: "Error uploading file, storage data is null",
+                success: false,
+                message: "Upload failed, no storage data returned",
             });
+            return;
         }
+        const imageUrl = supabaseClient_1.default.storage
+            .from("music-store")
+            .getPublicUrl(storageData.path);
+        const artist = await prisma_1.default.artist.create({
+            data: {
+                name,
+                genre,
+                bio,
+                img: imageUrl.data.publicUrl,
+            },
+        });
+        resp.status(201).json({
+            success: true,
+            data: artist,
+            message: "Artist created successfully",
+        });
     }
     catch (error) {
-        resp.status(500).json({ error, message: "Error Saving Information" });
+        resp.status(500).json({
+            success: false,
+            message: "Error creating artist",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
     }
 };
 exports.createArtist = createArtist;
-/// Artist By Id.
+/* =========================
+   GET ARTIST BY ID
+========================= */
 const getArtistById = async (req, resp) => {
     try {
-        const ArtistId = req.params.id;
-        let data = await prisma_config_1.default.artist.findUnique({
+        const artistId = req.params.id;
+        if (!artistId) {
+            resp.status(400).json({
+                success: false,
+                message: "Artist ID is required",
+            });
+            return;
+        }
+        const artist = await prisma_1.default.artist.findUnique({
             where: {
-                id: ArtistId,
+                id: artistId,
+            },
+            select: {
+                id: true,
+                name: true,
+                genre: true,
+                bio: true,
+                img: true,
+                songs: {
+                    select: {
+                        id: true,
+                        title: true,
+                        duration: true,
+                        img: true,
+                        genre: true,
+                        songUrl: true,
+                        releaseDate: true,
+                        isExplicit: true,
+                        playCount: true,
+                        likes: true,
+                        // ✅ THIS IS THE KEY FIX
+                        album: {
+                            select: {
+                                id: true,
+                                title: true,
+                                img: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                },
+                _count: {
+                    select: {
+                        songs: true,
+                    },
+                },
             },
         });
-        if (!data) {
-            resp.status(404).json({ message: "Artist not found" });
+        if (!artist) {
+            resp.status(404).json({
+                success: false,
+                data: null,
+                message: "Artist not found",
+            });
+            return;
         }
-        else {
-            resp
-                .status(200)
-                .json({ data: data, message: "Artist Infomation Successfully Found" });
-        }
+        resp.status(200).json({
+            success: true,
+            data: artist,
+            message: "Artist fetched successfully",
+        });
     }
     catch (error) {
-        resp
-            .status(500)
-            .json({ error, message: "Artist Info Not Updated Successfully" });
+        resp.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
     }
 };
 exports.getArtistById = getArtistById;
+/* =========================
+   UPDATE ARTIST
+========================= */
 const updateArtistById = async (req, resp) => {
     try {
-        const ArtistId = req.params.id;
+        const artistId = req.params.id;
         const body = req.body;
-        const existingArtist = await prisma_config_1.default.artist.findUnique({
-            where: {
-                id: ArtistId,
-            },
+        if (!artistId) {
+            resp.status(400).json({
+                success: false,
+                message: "Artist ID is required",
+            });
+            return;
+        }
+        const existingArtist = await prisma_1.default.artist.findUnique({
+            where: { id: artistId },
         });
         if (!existingArtist) {
-            resp.status(404).json({ message: "Artist Not Found" });
+            resp.status(404).json({
+                success: false,
+                data: null,
+                message: "Artist not found",
+            });
+            return;
         }
-        let updatedData = {
-            ...body,
-        };
-        // let data = await Artist.updateOne({ ArtistId }, updateArtist);
-        const Artist = await prisma_config_1.default.artist.update({
-            where: { id: ArtistId },
-            data: updatedData,
+        const updatedArtist = await prisma_1.default.artist.update({
+            where: { id: artistId },
+            data: { ...body },
         });
-        resp
-            .status(200)
-            .json({ data: Artist, message: "Artist Info Updated Successfully" });
+        resp.status(200).json({
+            success: true,
+            data: updatedArtist,
+            message: "Artist updated successfully",
+        });
     }
     catch (error) {
-        resp
-            .status(500)
-            .json({ error, message: "Artist Info Not Updated Successfully" });
+        resp.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
     }
 };
 exports.updateArtistById = updateArtistById;
+/* =========================
+   DELETE ARTIST
+========================= */
 const deleteArtistById = async (req, resp) => {
     try {
-        const ArtistId = req.params.id;
-        const existingArtist = await prisma_config_1.default.artist.findUnique({
-            where: {
-                id: ArtistId,
-            },
+        const artistId = req.params.id;
+        if (!artistId) {
+            resp.status(400).json({
+                success: false,
+                message: "Artist ID is required",
+            });
+            return;
+        }
+        const existingArtist = await prisma_1.default.artist.findUnique({
+            where: { id: artistId },
         });
         if (!existingArtist) {
-            resp.status(404).json({ message: "Artist Not Found" });
+            resp.status(404).json({
+                success: false,
+                data: null,
+                message: "Artist not found",
+            });
+            return;
         }
-        const Artist = await prisma_config_1.default.artist.delete({
-            where: { id: ArtistId },
+        const deletedArtist = await prisma_1.default.artist.delete({
+            where: { id: artistId },
         });
-        resp.status(200).json({ Artist, message: "Artist deleted successfully" });
+        resp.status(200).json({
+            success: true,
+            data: deletedArtist,
+            message: "Artist deleted successfully",
+        });
     }
     catch (error) {
-        resp.status(500).json({ error, message: "Artist Not Found" });
+        resp.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error instanceof Error ? error.message : "Unknown error",
+        });
     }
 };
 exports.deleteArtistById = deleteArtistById;
