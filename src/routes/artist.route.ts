@@ -17,5 +17,4 @@ router
   .get(getArtistById)
   .put(updateArtistById)
   .delete(deleteArtistById);
-
 export default router;

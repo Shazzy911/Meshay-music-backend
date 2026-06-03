@@ -21,12 +21,26 @@ const port = process.env.PORT;
 
 /// MiddleWare...
 
+const allowedOrigins = (process.env.ALLOWED_ORIGIN ?? "").split(",");
+
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGIN,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-  })
+  }),
 );
+// app.use(
+//   cors({
+//     origin: process.env.ALLOWED_ORIGIN,
+//     credentials: true,
+//   })
+// );
 app.use(cookieParser("my_secret"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

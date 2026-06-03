@@ -1,59 +1,38 @@
 import { Request, Response } from "../types/file.type";
-
 import prisma from "../lib/prisma";
-// import { supabase } from "../lib/supabaseClient";
 
-const getAllPayment = async (req: Request, resp: Response) => {
+const getAllPayment = async (req: Request, resp: Response): Promise<void> => {
   try {
-    let Payment = await prisma.payment.findMany();
+    const payment = await prisma.payment.findMany();
 
-    if (!Payment || Payment.length === 0) {
-      resp.status(404).json({ message: "Payment not Found" });
+    if (!payment || payment.length === 0) {
+      resp.status(404).json({
+        message: "Payment not Found",
+      });
+      return;
     }
 
-    resp.status(200).json(Payment);
+    resp.status(200).json({
+      data: payment,
+      message: "Payments fetched successfully",
+    });
+    return;
   } catch (error) {
     resp.status(500).json({ error });
+    return;
   }
 };
 
-const createPayment = async (req: Request, resp: Response) => {
+const createPayment = async (req: Request, resp: Response): Promise<void> => {
   try {
     const { userId, subscriptionId, amount, date, method } = req.body;
 
     if (!userId || !subscriptionId || !amount || !date || !method) {
-      resp.status(404).json({ message: "All fields are required" });
+      resp.status(400).json({
+        message: "All fields are required",
+      });
+      return;
     }
-
-    // Upload the image to a specific folder in your Supabase storage bucket
-    // const { data: storageData, error: storageError } = await supabase.storage
-    //   .from("music-store")
-    //   .upload(`Payment/${file.originalname}`, file.buffer, {
-    //     cacheControl: "3600",
-    //     upsert: false,
-    //     contentType: file.mimetype,
-    //   });
-
-    // if (storageError) {
-    //   return resp
-    //     .status(500)
-    //     .json({
-    //       error: storageError,
-    //       message: "Error uploading image to Supabase",
-    //     });
-    // }
-
-    // Get the public URL for the image
-    // const { data: urlData, error: urlError } = supabase.storage
-    //   .from("music-store")
-    //   .getPublicUrl(`images/${file.originalname}`);
-
-    // if (urlError || !urlData) {
-    //   return resp.status(500).json({
-    //     error: urlError,
-    //     message: "Error generating public URL for the image",
-    //   });
-    // }
 
     const data = await prisma.payment.create({
       data: {
@@ -66,94 +45,137 @@ const createPayment = async (req: Request, resp: Response) => {
     });
 
     resp.status(201).json({
+      success: true,
       result: data,
       message: "Payment Information Saved Successfully",
     });
+    return;
   } catch (error) {
-    resp.status(500).json({ error, message: "Error Saving Information" });
+    resp.status(500).json({
+      error,
+      message: "Error Saving Information",
+    });
+    return;
   }
 };
 
-/// Payment By Id.
-const getPaymentById = async (req: Request, resp: Response) => {
+const getPaymentById = async (req: Request, resp: Response): Promise<void> => {
   try {
-    const PaymentId = req.params.id;
+    const paymentId = req.params.id;
 
-    let data = await prisma.payment.findUnique({
+    const data = await prisma.payment.findUnique({
       where: {
-        id: PaymentId,
+        id: paymentId,
       },
     });
+
     if (!data) {
-      resp.status(404).json({ message: "Payment not found" });
-    } else {
-      resp
-        .status(200)
-        .json({ data: data, message: "Payment Infomation Successfully Found" });
+      resp.status(404).json({
+        message: "Payment not found",
+      });
+      return;
     }
+
+    resp.status(200).json({
+      data,
+      message: "Payment Information Successfully Found",
+    });
+    return;
   } catch (error) {
-    resp
-      .status(500)
-      .json({ error, message: "Payment Info Not Updated Successfully" });
+    resp.status(500).json({
+      error,
+      message: "Payment Info Not Found",
+    });
+    return;
   }
 };
 
-const updatePaymentById = async (req: Request, resp: Response) => {
+const updatePaymentById = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
-    const PaymentId = req.params.id;
+    const paymentId = req.params.id;
     const body = req.body;
 
     const existingPayment = await prisma.payment.findUnique({
       where: {
-        id: PaymentId,
+        id: paymentId,
       },
     });
 
     if (!existingPayment) {
-      resp.status(404).json({ message: "Payment Not Found" });
+      resp.status(404).json({
+        message: "Payment Not Found",
+      });
+      return;
     }
 
-    let updatedData = {
+    const updatedData = {
       ...body,
     };
 
-    // let data = await Payment.updateOne({ PaymentId }, updatePayment);
-    const Payment = await prisma.payment.update({
-      where: { id: PaymentId },
+    const payment = await prisma.payment.update({
+      where: {
+        id: paymentId,
+      },
       data: updatedData,
     });
-    resp
-      .status(200)
-      .json({ data: Payment, message: "Payment Info Updated Successfully" });
+
+    resp.status(200).json({
+      data: payment,
+      message: "Payment Info Updated Successfully",
+    });
+    return;
   } catch (error) {
-    resp
-      .status(500)
-      .json({ error, message: "Payment Info Not Updated Successfully" });
+    resp.status(500).json({
+      error,
+      message: "Payment Info Not Updated Successfully",
+    });
+    return;
   }
 };
 
-const deletePaymentById = async (req: Request, resp: Response) => {
+const deletePaymentById = async (
+  req: Request,
+  resp: Response,
+): Promise<void> => {
   try {
-    const PaymentId = req.params.id;
+    const paymentId = req.params.id;
 
     const existingPayment = await prisma.payment.findUnique({
       where: {
-        id: PaymentId,
+        id: paymentId,
       },
     });
 
     if (!existingPayment) {
-      resp.status(404).json({ message: "Payment Not Found" });
+      resp.status(404).json({
+        message: "Payment Not Found",
+      });
+      return;
     }
 
-    const Payment = await prisma.payment.delete({
-      where: { id: PaymentId },
+    const payment = await prisma.payment.delete({
+      where: {
+        id: paymentId,
+      },
     });
-    resp.status(200).json({ Payment, message: "Payment deleted successfully" });
+
+    resp.status(200).json({
+      payment,
+      message: "Payment deleted successfully",
+    });
+    return;
   } catch (error) {
-    resp.status(500).json({ error, message: "Payment Not Found" });
+    resp.status(500).json({
+      error,
+      message: "Payment Not Found",
+    });
+    return;
   }
 };
+
 export {
   getAllPayment,
   createPayment,

@@ -5,14 +5,15 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const SUPABASE_URL = process.env.SUPABASE_URL?.trim() || "";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY?.trim() || "";
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || "";
 
 // Check if URL is valid before creating the client
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   throw new Error("Supabase URL or ANON Key is not defined!");
 }
 
 // Initialize Supabase client
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 export default supabase; // Default export
