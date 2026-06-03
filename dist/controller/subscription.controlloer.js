@@ -4,18 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteSubscriptionById = exports.updateSubscriptionById = exports.getSubscriptionById = exports.createSubscription = exports.getAllSubscription = void 0;
-const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
-// import { supabase } from "../lib/supabaseClient";
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const getAllSubscription = async (req, resp) => {
     try {
-        let Subscription = await prisma_config_1.default.subscription.findMany();
-        if (!Subscription || Subscription.length === 0) {
+        const subscription = await prisma_1.default.subscription.findMany();
+        if (!subscription || subscription.length === 0) {
             resp.status(404).json({ message: "Subscription not Found" });
+            return;
         }
-        resp.status(200).json(Subscription);
+        resp.status(200).json(subscription);
+        return;
     }
     catch (error) {
         resp.status(500).json({ error });
+        return;
     }
 };
 exports.getAllSubscription = getAllSubscription;
@@ -23,35 +25,10 @@ const createSubscription = async (req, resp) => {
     try {
         const { userId, status, plan, startDate, endDate } = req.body;
         if (!status || !plan || !userId || !startDate || !endDate) {
-            resp.status(404).json({ message: "All fields are required" });
+            resp.status(400).json({ message: "All fields are required" });
+            return;
         }
-        // Upload the image to a specific folder in your Supabase storage bucket
-        // const { data: storageData, error: storageError } = await supabase.storage
-        //   .from("music-store")
-        //   .upload(`Subscription/${file.originalname}`, file.buffer, {
-        //     cacheControl: "3600",
-        //     upsert: false,
-        //     contentType: file.mimetype,
-        //   });
-        // if (storageError) {
-        //   return resp
-        //     .status(500)
-        //     .json({
-        //       error: storageError,
-        //       message: "Error uploading image to Supabase",
-        //     });
-        // }
-        // Get the public URL for the image
-        // const { data: urlData, error: urlError } = supabase.storage
-        //   .from("music-store")
-        //   .getPublicUrl(`images/${file.originalname}`);
-        // if (urlError || !urlData) {
-        //   return resp.status(500).json({
-        //     error: urlError,
-        //     message: "Error generating public URL for the image",
-        //   });
-        // }
-        const data = await prisma_config_1.default.subscription.create({
+        const data = await prisma_1.default.subscription.create({
             data: {
                 userId,
                 status,
@@ -64,90 +41,94 @@ const createSubscription = async (req, resp) => {
             result: data,
             message: "Subscription Information Saved Successfully",
         });
+        return;
     }
     catch (error) {
         resp.status(500).json({ error, message: "Error Saving Information" });
+        return;
     }
 };
 exports.createSubscription = createSubscription;
-/// Subscription By Id.
 const getSubscriptionById = async (req, resp) => {
     try {
-        const SubscriptionId = req.params.id;
-        let data = await prisma_config_1.default.subscription.findUnique({
-            where: {
-                id: SubscriptionId,
-            },
+        const subscriptionId = req.params.id;
+        const data = await prisma_1.default.subscription.findUnique({
+            where: { id: subscriptionId },
         });
         if (!data) {
             resp.status(404).json({ message: "Subscription not found" });
+            return;
         }
-        else {
-            resp.status(200).json({
-                data: data,
-                message: "Subscription Infomation Successfully Found",
-            });
-        }
+        resp.status(200).json({
+            data,
+            message: "Subscription Successfully Found",
+        });
+        return;
     }
     catch (error) {
-        resp
-            .status(500)
-            .json({ error, message: "Subscription Info Not Updated Successfully" });
+        resp.status(500).json({
+            error,
+            message: "Subscription fetch failed",
+        });
+        return;
     }
 };
 exports.getSubscriptionById = getSubscriptionById;
 const updateSubscriptionById = async (req, resp) => {
     try {
-        const SubscriptionId = req.params.id;
+        const subscriptionId = req.params.id;
         const body = req.body;
-        const existingSubscription = await prisma_config_1.default.subscription.findUnique({
-            where: {
-                id: SubscriptionId,
-            },
+        const existingSubscription = await prisma_1.default.subscription.findUnique({
+            where: { id: subscriptionId },
         });
         if (!existingSubscription) {
             resp.status(404).json({ message: "Subscription Not Found" });
+            return;
         }
-        let updatedData = {
-            ...body,
-        };
-        // let data = await Subscription.updateOne({ SubscriptionId }, updateSubscription);
-        const Subscription = await prisma_config_1.default.subscription.update({
-            where: { id: SubscriptionId },
-            data: updatedData,
+        const subscription = await prisma_1.default.subscription.update({
+            where: { id: subscriptionId },
+            data: { ...body },
         });
         resp.status(200).json({
-            data: Subscription,
-            message: "Subscription Info Updated Successfully",
+            data: subscription,
+            message: "Subscription Updated Successfully",
         });
+        return;
     }
     catch (error) {
-        resp
-            .status(500)
-            .json({ error, message: "Subscription Info Not Updated Successfully" });
+        resp.status(500).json({
+            error,
+            message: "Subscription update failed",
+        });
+        return;
     }
 };
 exports.updateSubscriptionById = updateSubscriptionById;
 const deleteSubscriptionById = async (req, resp) => {
     try {
-        const SubscriptionId = req.params.id;
-        const existingSubscription = await prisma_config_1.default.subscription.findUnique({
-            where: {
-                id: SubscriptionId,
-            },
+        const subscriptionId = req.params.id;
+        const existingSubscription = await prisma_1.default.subscription.findUnique({
+            where: { id: subscriptionId },
         });
         if (!existingSubscription) {
             resp.status(404).json({ message: "Subscription Not Found" });
+            return;
         }
-        const Subscription = await prisma_config_1.default.subscription.delete({
-            where: { id: SubscriptionId },
+        const subscription = await prisma_1.default.subscription.delete({
+            where: { id: subscriptionId },
         });
-        resp
-            .status(200)
-            .json({ Subscription, message: "Subscription deleted successfully" });
+        resp.status(200).json({
+            subscription,
+            message: "Subscription deleted successfully",
+        });
+        return;
     }
     catch (error) {
-        resp.status(500).json({ error, message: "Subscription Not Found" });
+        resp.status(500).json({
+            error,
+            message: "Subscription delete failed",
+        });
+        return;
     }
 };
 exports.deleteSubscriptionById = deleteSubscriptionById;

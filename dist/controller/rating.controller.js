@@ -4,18 +4,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteRatingById = exports.updateRatingById = exports.getRatingById = exports.createRating = exports.getAllRating = void 0;
-const prisma_config_1 = __importDefault(require("../lib/prisma.config"));
-// import { supabase } from "../lib/supabaseClient";
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const getAllRating = async (req, resp) => {
     try {
-        let Rating = await prisma_config_1.default.rating.findMany();
-        if (!Rating || Rating.length === 0) {
-            resp.status(404).json({ message: "Rating not Found" });
+        const rating = await prisma_1.default.rating.findMany();
+        if (!rating || rating.length === 0) {
+            resp.status(404).json({
+                message: "Rating not Found",
+            });
+            return;
         }
-        resp.status(200).json(Rating);
+        resp.status(200).json({
+            data: rating,
+            message: "Ratings fetched successfully",
+        });
+        return;
     }
     catch (error) {
         resp.status(500).json({ error });
+        return;
     }
 };
 exports.getAllRating = getAllRating;
@@ -23,124 +30,133 @@ const createRating = async (req, resp) => {
     try {
         const { rating, userId, songId } = req.body;
         if (!rating || !songId || !userId) {
-            resp.status(404).json({ message: "All fields are required" });
+            resp.status(400).json({
+                message: "All fields are required",
+            });
+            return;
         }
-        // Upload the image to a specific folder in your Supabase storage bucket
-        // const { data: storageData, error: storageError } = await supabase.storage
-        //   .from("music-store")
-        //   .upload(`Rating/${file.originalname}`, file.buffer, {
-        //     cacheControl: "3600",
-        //     upsert: false,
-        //     contentType: file.mimetype,
-        //   });
-        // if (storageError) {
-        //   return resp
-        //     .status(500)
-        //     .json({
-        //       error: storageError,
-        //       message: "Error uploading image to Supabase",
-        //     });
-        // }
-        // Get the public URL for the image
-        // const { data: urlData, error: urlError } = supabase.storage
-        //   .from("music-store")
-        //   .getPublicUrl(`images/${file.originalname}`);
-        // if (urlError || !urlData) {
-        //   return resp.status(500).json({
-        //     error: urlError,
-        //     message: "Error generating public URL for the image",
-        //   });
-        // }
-        const data = await prisma_config_1.default.rating.create({
+        const data = await prisma_1.default.rating.create({
             data: {
                 userId,
                 songId,
                 rating,
             },
         });
-        resp
-            .status(201)
-            .json({ result: data, message: "Rating Information Saved Successfully" });
+        resp.status(201).json({
+            success: true,
+            result: data,
+            message: "Rating Information Saved Successfully",
+        });
+        return;
     }
     catch (error) {
-        resp.status(500).json({ error, message: "Error Saving Information" });
+        resp.status(500).json({
+            error,
+            message: "Error Saving Information",
+        });
+        return;
     }
 };
 exports.createRating = createRating;
-/// Rating By Id.
 const getRatingById = async (req, resp) => {
     try {
-        const RatingId = req.params.id;
-        let data = await prisma_config_1.default.rating.findUnique({
+        const ratingId = req.params.id;
+        const data = await prisma_1.default.rating.findUnique({
             where: {
-                id: RatingId,
+                id: ratingId,
             },
         });
         if (!data) {
-            resp.status(404).json({ message: "Rating not found" });
+            resp.status(404).json({
+                message: "Rating not found",
+            });
+            return;
         }
-        else {
-            resp
-                .status(200)
-                .json({ data: data, message: "Rating Infomation Successfully Found" });
-        }
+        resp.status(200).json({
+            data,
+            message: "Rating Information Successfully Found",
+        });
+        return;
     }
     catch (error) {
-        resp
-            .status(500)
-            .json({ error, message: "Rating Info Not Updated Successfully" });
+        resp.status(500).json({
+            error,
+            message: "Rating Info Not Found",
+        });
+        return;
     }
 };
 exports.getRatingById = getRatingById;
 const updateRatingById = async (req, resp) => {
     try {
-        const RatingId = req.params.id;
+        const ratingId = req.params.id;
         const body = req.body;
-        const existingRating = await prisma_config_1.default.rating.findUnique({
+        const existingRating = await prisma_1.default.rating.findUnique({
             where: {
-                id: RatingId,
+                id: ratingId,
             },
         });
         if (!existingRating) {
-            resp.status(404).json({ message: "Rating Not Found" });
+            resp.status(404).json({
+                message: "Rating Not Found",
+            });
+            return;
         }
-        let updatedData = {
+        const updatedData = {
             ...body,
         };
-        // let data = await Rating.updateOne({ RatingId }, updateRating);
-        const Rating = await prisma_config_1.default.rating.update({
-            where: { id: RatingId },
+        const rating = await prisma_1.default.rating.update({
+            where: {
+                id: ratingId,
+            },
             data: updatedData,
         });
-        resp
-            .status(200)
-            .json({ data: Rating, message: "Rating Info Updated Successfully" });
+        resp.status(200).json({
+            data: rating,
+            message: "Rating Info Updated Successfully",
+        });
+        return;
     }
     catch (error) {
-        resp
-            .status(500)
-            .json({ error, message: "Rating Info Not Updated Successfully" });
+        resp.status(500).json({
+            error,
+            message: "Rating Info Not Updated Successfully",
+        });
+        return;
     }
 };
 exports.updateRatingById = updateRatingById;
 const deleteRatingById = async (req, resp) => {
     try {
-        const RatingId = req.params.id;
-        const existingRating = await prisma_config_1.default.rating.findUnique({
+        const ratingId = req.params.id;
+        const existingRating = await prisma_1.default.rating.findUnique({
             where: {
-                id: RatingId,
+                id: ratingId,
             },
         });
         if (!existingRating) {
-            resp.status(404).json({ message: "Rating Not Found" });
+            resp.status(404).json({
+                message: "Rating Not Found",
+            });
+            return;
         }
-        const Rating = await prisma_config_1.default.rating.delete({
-            where: { id: RatingId },
+        const rating = await prisma_1.default.rating.delete({
+            where: {
+                id: ratingId,
+            },
         });
-        resp.status(200).json({ Rating, message: "Rating deleted successfully" });
+        resp.status(200).json({
+            rating,
+            message: "Rating deleted successfully",
+        });
+        return;
     }
     catch (error) {
-        resp.status(500).json({ error, message: "Rating Not Found" });
+        resp.status(500).json({
+            error,
+            message: "Rating Not Found",
+        });
+        return;
     }
 };
 exports.deleteRatingById = deleteRatingById;
